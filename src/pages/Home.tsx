@@ -1,12 +1,15 @@
+import { Link } from 'react-router'
+import { TopBar } from '../components/TopBar'
+
 export function Home(){
     return <>
-    <div id="top-bar">
-        <h1>HOME</h1>
-        <div id="log-in-out-btn-holder">
+    <TopBar
+        title="HOME"
+        actions={<>
             <button id="login-btn">LOG IN</button>
             <button id="logout-btn">LOG OUT</button>
-        </div>
-    </div>
+        </>}
+    />
     <form id="search-form">
     <input
         type="search"
@@ -23,21 +26,21 @@ export function Home(){
         <div className="activity">
             <h2>activity 1</h2>
             <div className="btn-holder">
-                <a href="/activity">go</a>
+                <Link to="/activity">go</Link>
                 <button>...</button>
             </div>
         </div>
         <div className="activity">
             <h2>activity 2</h2>
             <div className="btn-holder">
-                <a href="/activity">go</a>
+                <Link to="/activity">go</Link>
                 <button>...</button>
             </div>
         </div>
         <div className="activity">
             <h2>activity 3</h2>
             <div className="btn-holder">
-                <a href="/activity">go</a>
+                <Link to="/activity">go</Link>
                 <button>...</button>
             </div>
         </div>

@@ -1,12 +1,9 @@
+import { Link } from 'react-router'
+import { TopBar } from '../components/TopBar'
+
 export function Activity(){
     return <>
-    <div id="top-bar">
-        <div id="log-in-out-btn-holder">
-            <a href="/">/--</a>
-        </div>
-        <h1>Activity</h1>
-        <div id="log-in-out-btn-holder"></div>
-    </div>
+    <TopBar title="Activity" actions={<Link to="/home">Back</Link>} />
 
     <div id="curr-activities-holder">
         <div className="Task">

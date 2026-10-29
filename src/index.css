@@ -1,22 +1,31 @@
+/* Compass visual identity: a printed orientation map.
+   Paper, navy ink, vermilion marker, contour lines. */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #5dc1c9;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(59, 242, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --paper: #f2ecdf;
+  --paper-2: #e8dfcc;
+  --ink: #1c2b3a;
+  --ink-soft: #4d5b6a;
+  --line: #c9bca2;
+  --contour: #d9ccb2;
+  --accent: #d6462b;
+  --accent-bg: rgba(214, 70, 43, 0.08);
+  --moss: #5d7a4e;
+  --error: #b3261e;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Names used by the existing pages */
+  --text: var(--ink-soft);
+  --text-h: var(--ink);
+  --bg: var(--paper);
+  --border: var(--line);
+  --code-bg: var(--paper-2);
+  --social-bg: rgba(255, 255, 255, 0.35);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans: 'IBM Plex Sans', system-ui, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --heading: var(--serif);
+
+  font: 17px/1.55 var(--sans);
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
@@ -24,45 +33,37 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
+/* Night map */
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #84eefc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(132, 218, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    --paper: #131b25;
+    --paper-2: #1a2430;
+    --ink: #efe6d4;
+    --ink-soft: #a7afb8;
+    --line: #34414f;
+    --contour: #243140;
+    --accent: #ef6a4c;
+    --accent-bg: rgba(239, 106, 76, 0.12);
+    --moss: #8fb07c;
+    --error: #ff8a7a;
+    --social-bg: rgba(255, 255, 255, 0.03);
   }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  background-color: var(--paper);
+  /* faint survey grid */
+  background-image: radial-gradient(var(--contour) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
 }
 
 h1,
@@ -70,41 +71,39 @@ h2 {
   font-family: var(--heading);
   font-weight: 500;
   color: var(--text-h);
+  font-optical-sizing: auto;
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+  font-size: 48px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 24px 0;
 }
 h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
 }
 p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+a {
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 code {
+  font-family: var(--mono);
   font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--text-h);
   background: var(--code-bg);
 }
