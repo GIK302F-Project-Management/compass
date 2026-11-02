@@ -482,3 +482,336 @@
     width: 99%;
     background-color: var(--code-bg);
 }
+
+#search-form{
+    display: flex;
+    gap: 8px;
+    width: calc(100% - 32px);
+    max-width: 1040px;
+    margin: 2.5rem auto 0;
+}
+#activity-search{
+    flex: 1;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px var(--sans);
+    transition: box-shadow 0.12s ease;
+}
+#activity-search:focus{
+    outline: none;
+    box-shadow: 4px 4px 0 var(--accent);
+}
+
+/* Activities shown as an atlas: one map sheet per activity, in no fixed order */
+#curr-activities-holder.atlas{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    align-items: stretch;
+    gap: 28px 24px;
+    width: calc(100% - 32px);
+    max-width: 1040px;
+    box-sizing: border-box;
+    margin: 2rem auto 3rem;
+    padding: 0;
+    background: none;
+}
+.atlas-count,
+.atlas-empty{
+    grid-column: 1 / -1;
+    margin: 0;
+}
+.atlas-count{
+    margin-bottom: -12px;
+}
+.sheet{
+    display: flex;
+    flex-direction: column;
+    min-height: 210px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper-2);
+    box-shadow: 6px 6px 0 var(--ink);
+}
+.sheet.due-soon{
+    box-shadow: 6px 6px 0 var(--accent);
+}
+.sheet.done{
+    opacity: 0.65;
+}
+.sheet-header{
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1.5px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+}
+.sheet-map{
+    display: block;
+    width: 100%;
+    height: 96px;
+    border-bottom: 1.5px solid var(--ink);
+    background: var(--paper);
+}
+.sheet-map .route{
+    stroke-width: 2.5;
+    stroke-dasharray: 0.1 7;
+}
+.sheet-badge{
+    flex-shrink: 0;
+    color: var(--accent);
+}
+.sheet-body{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 16px 8px;
+}
+.sheet-body h2{
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+}
+.sheet-due{
+    margin: 0;
+    font-size: 15px;
+}
+.sheet-actions{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px 16px;
+}
+.sheet-actions > :first-child{
+    margin-right: auto;
+}
+/* blank sheet that starts a new activity */
+.sheet-blank{
+    align-items: center;
+    justify-content: center;
+    border: 1.5px dashed var(--line);
+    background: transparent;
+    box-shadow: none;
+    color: var(--ink);
+    font: 500 16px var(--sans);
+    cursor: pointer;
+    transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+}
+.sheet-blank:hover{
+    border-color: var(--accent);
+    background: var(--accent-bg);
+    color: var(--accent);
+}
+.sheet-form .sheet-body{
+    gap: 14px;
+}
+.sheet-form .sheet-actions{
+    gap: 16px;
+}
+
+/* ---------- Activity tasks ---------- */
+.activity-page{
+    width: calc(100% - 32px);
+    max-width: 640px;
+    margin: 2.5rem auto 3rem;
+}
+.activity-header{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2.5rem;
+}
+.activity-header h2{
+    margin: 0;
+    font-size: clamp(32px, 5vw, 44px);
+    letter-spacing: -0.03em;
+}
+.activity-progress{
+    margin: 4px 0 0;
+    color: var(--ink);
+}
+.activity-progress em{
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent);
+}
+.progress-track{
+    height: 10px;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    overflow: hidden;
+}
+.progress-track span{
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+
+/* Tasks drawn as a route, with a checkbox as each waypoint */
+#curr-activities-holder.task-list{
+    align-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    background: none;
+    list-style: none;
+}
+.task-list .Task{
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    column-gap: 24px;
+    padding-bottom: 32px;
+}
+.task-list .Task > input,
+.task-list .Task > .task-marker{
+    grid-column: 1;
+    grid-row: 1;
+}
+.task-list .Task > label{
+    grid-column: 2;
+    grid-row: 1;
+}
+.task-list .Task::before{
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 30px;
+    bottom: 4px;
+    border-left: 2px dashed var(--line);
+}
+.task-list .Task:last-child::before{
+    display: none;
+}
+.task-list .Task.done::before{
+    border-left: 2px solid var(--ink);
+}
+.task-list input[type="checkbox"]{
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    margin: 2px 0 0;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.task-list input[type="checkbox"]:hover{
+    border-color: var(--accent);
+}
+.task-list input[type="checkbox"]:checked{
+    border-color: var(--ink);
+    background: var(--ink);
+    box-shadow: inset 0 0 0 4px var(--paper);
+}
+.task-list input[type="checkbox"]:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+.task-list label{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+}
+.task-title{
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+}
+.task-list .Task.done .task-title{
+    color: var(--ink-soft);
+    text-decoration: line-through;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+}
+.task-details{
+    grid-column: 2;
+    margin: 6px 0 0;
+}
+.task-list .Task.done .task-details{
+    opacity: 0.7;
+}
+/* edit/delete stay quiet until the row is hovered or focused */
+.task-actions{
+    grid-column: 3;
+    grid-row: 1;
+    display: flex;
+    gap: 6px;
+    opacity: 0.55;
+    transition: opacity 0.12s ease;
+}
+.task-list .Task:hover .task-actions,
+.task-actions:focus-within{
+    opacity: 1;
+}
+/* empty waypoint used by the add button and the task form */
+.task-marker{
+    width: 24px;
+    height: 24px;
+    box-sizing: border-box;
+    margin-top: 2px;
+    border: 2px dashed var(--line);
+    border-radius: 50%;
+}
+.task-draft .task-marker{
+    border-color: var(--accent);
+}
+.task-add > button{
+    grid-column: 2 / -1;
+    justify-self: start;
+}
+.task-form{
+    grid-column: 2 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.task-form-actions{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+@media (prefers-reduced-motion: reduce){
+    .progress-track span{ transition: none; }
+}
+
+/* ---------- Small shared buttons ---------- */
+.button-link{
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+}
+.button-danger:hover{
+    border-color: var(--error);
+    background: transparent;
+    color: var(--error);
+}
+.button-icon{
+    padding: 8px;
+}
+.icon{
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}

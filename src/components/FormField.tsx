@@ -5,7 +5,7 @@ type FormFieldProps = {
   label: string
   value: string
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
-  type?: 'text' | 'email' | 'password'
+  type?: 'text' | 'email' | 'password' | 'date'
   autoComplete?: string
   hint?: string
   error?: string
