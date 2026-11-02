@@ -1,14 +1,12 @@
 import { Link } from 'react-router'
 import { TopBar } from '../components/TopBar'
+import { UserMenu } from '../components/UserMenu'
 
 export function Home(){
     return <>
     <TopBar
         title="HOME"
-        actions={<>
-            <button id="login-btn">LOG IN</button>
-            <button id="logout-btn">LOG OUT</button>
-        </>}
+        actions={<UserMenu />}
     />
     <form id="search-form">
     <input
