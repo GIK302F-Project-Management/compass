@@ -65,7 +65,14 @@ export function Home(){
     return <>
     <TopBar
         title="Your atlas"
-        actions={<UserMenu />}
+        actions={
+            <>
+                <Link to="/plan" className="button button-small">
+                    Study plan
+                </Link>
+                <UserMenu />
+            </>
+        }
     />
     <form id="search-form">
     <input
