@@ -1,10 +1,9 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
-import { clearSession, getSession } from '../api/session'
+import { Link } from 'react-router'
+import { endSession } from '../api/session'
+import { useSession } from '../hooks/useSession'
 
 export function UserMenu() {
-  const navigate = useNavigate()
-  const [session] = useState(getSession)
+  const session = useSession()
 
   if (!session) {
     return (
@@ -14,17 +13,13 @@ export function UserMenu() {
     )
   }
 
-  function handleLogout() {
-    clearSession()
-    navigate('/login')
-  }
-
+  // Ending the session is enough: the protected routes see it and send the student to the login page.
   return (
     <>
       <span className="user-name" title={session.email}>
         {session.name}
       </span>
-      <button type="button" className="button button-small" onClick={handleLogout}>
+      <button type="button" className="button button-small" onClick={() => endSession('logout')}>
         Log out
       </button>
     </>

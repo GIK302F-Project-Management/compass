@@ -40,8 +40,6 @@ export function Register() {
       const result = await registerUser({ name: values.name, email: values.email, password: values.password })
       if (result.ok) {
         setRegistered(true)
-      } else if (result.error === 'email-taken') {
-        setErrors({ email: 'An account with this email already exists. Try logging in instead.' })
       } else {
         setErrors({ email: `Use your university email (name@${UNIVERSITY_EMAIL_DOMAIN}).` })
       }
@@ -75,7 +73,8 @@ export function Register() {
             <section className="auth-card" role="status">
               <p className="kicker">Waypoint 01 reached</p>
               <h1>You're on the map, {values.name.trim()}.</h1>
-              <p>Your account is ready. Log in to plot your first route.</p>
+              <p>Log in with your email and password to plot your first route.</p>
+              <p className="auth-note">Already had an account with this email? Your original password still works.</p>
               <Link to="/login" className="button button-primary">
                 Log in
               </Link>

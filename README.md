@@ -34,8 +34,9 @@ The app runs at http://localhost:5173.
 
 ```
 src/
-├── api/          # API clients (auth, activities, tasks, session)
-├── components/   # Reusable UI components
+├── api/          # API clients (auth, http with token, session, study plan, activities, tasks)
+├── components/   # Reusable UI components (RouteGuards: login-protected routes)
+├── hooks/        # React hooks (useSession)
 ├── mocks/        # Mock data used until the backend is connected
 ├── pages/        # Route pages
 ├── utils/        # Helpers
