@@ -9,10 +9,11 @@ export type RegisterInput = {
   password: string
 }
 
-export type RegisterResult = { ok: true } | { ok: false; error: 'email-taken' | 'invalid-email' }
+export type RegisterResult = { ok: true } | { ok: false; error: 'invalid-email' }
 
-// POST /user/register on compass-backend: 201 -> created, 409 -> email already registered,
-// 400 -> validation failed ({ errors: { field: message } }). Any other status is unexpected and throws.
+// POST /user/register on compass-backend: 202 -> received, 400 -> validation failed ({ errors: { field: message } }).
+// The backend answers 202 both for a new account and for an email that already has one, on purpose, so the
+// page cannot tell the two apart. Any other status is unexpected and throws.
 export async function registerUser(input: RegisterInput): Promise<RegisterResult> {
   const response = await fetch(`${API_URL}/user/register`, {
     method: 'POST',
@@ -24,11 +25,8 @@ export async function registerUser(input: RegisterInput): Promise<RegisterResult
     }),
   })
 
-  if (response.status === 201) {
+  if (response.status === 202) {
     return { ok: true }
-  }
-  if (response.status === 409) {
-    return { ok: false, error: 'email-taken' }
   }
   if (response.status === 400) {
     // The form already checks name and password, so the email is the field that can still fail here.
