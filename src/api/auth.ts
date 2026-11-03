@@ -1,5 +1,6 @@
-import { createMockUser, findMockUserByEmail } from '../mocks/users'
-import { isUniversityEmail, normalizeEmail } from '../validation/register'
+import { normalizeEmail } from '../validation/register'
+
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
 export type RegisterInput = {
   name: string
@@ -9,23 +10,34 @@ export type RegisterInput = {
 
 export type RegisterResult = { ok: true } | { ok: false; error: 'email-taken' | 'invalid-email' }
 
-// Mock implementation. When the backend is ready, replace the body with
-// POST /auth/register and map 409 -> 'email-taken', 400 -> 'invalid-email'.
+// POST /user/register on compass-backend: 201 -> created, 409 -> email already registered,
+// 400 -> validation failed ({ errors: { field: message } }). Any other status is unexpected and throws.
 export async function registerUser(input: RegisterInput): Promise<RegisterResult> {
-  const email = normalizeEmail(input.email)
+  const response = await fetch(`${API_URL}/user/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: input.name.trim(),
+      email: normalizeEmail(input.email),
+      password: input.password,
+    }),
+  })
 
-  if (!isUniversityEmail(email)) {
-    return { ok: false, error: 'invalid-email' }
+  if (response.status === 201) {
+    return { ok: true }
   }
-  if (findMockUserByEmail(email)) {
+  if (response.status === 409) {
     return { ok: false, error: 'email-taken' }
   }
-
-  await createMockUser(input.name.trim(), email, input.password)
-  return { ok: true }
+  if (response.status === 400) {
+    // The form already checks name and password, so the email is the field that can still fail here.
+    const body = await response.json().catch(() => null)
+    if (body?.errors?.email) {
+      return { ok: false, error: 'invalid-email' }
+    }
+  }
+  throw new Error(`Unexpected register response: ${response.status}`)
 }
-
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
 export type LoginInput = {
   email: string
