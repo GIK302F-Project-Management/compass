@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { listActivities } from '../api/activities'
 import { clearLastPlan, loadLastPlan, saveLastPlan, type SavedPlan } from '../api/lastPlan'
-import { getSession } from '../api/session'
 import { generateStudyPlan, type PlanFailure } from '../api/studyPlan'
+import { useSession } from '../hooks/useSession'
 import { PlanForm } from '../components/PlanForm'
 import { PlanResult } from '../components/PlanResult'
 import { TopBar } from '../components/TopBar'
@@ -27,6 +27,7 @@ const FAILURE_MESSAGES: Record<PlanFailure, string> = {
   'ai-failed': 'The AI planner could not put together a valid plan this time. Please try again.',
   busy: 'The AI planner is busy right now. Please try again in a minute.',
   timeout: 'The AI planner took too long to answer. Please try again.',
+  'session-expired': 'Your session has ended. Log in again to continue.',
 }
 const UNREACHABLE_MESSAGE = 'Compass could not reach the planner. Check your connection and try again.'
 
@@ -39,9 +40,9 @@ function initialValues(saved: SavedPlan | null): PlanValues {
 }
 
 export function PlanPage() {
-  const [session] = useState(getSession)
+  const session = useSession()
   const ownerEmail = session?.email ?? ''
-  const [saved, setSaved] = useState(loadLastPlan)
+  const [saved, setSaved] = useState(() => loadLastPlan(ownerEmail))
   const [values, setValues] = useState(() => initialValues(saved))
   const [errors, setErrors] = useState<PlanErrors>(NO_ERRORS)
   const [checkLive, setCheckLive] = useState(false) // after a failed submit, re-check on every change
@@ -115,7 +116,7 @@ export function PlanPage() {
       const result = await generateStudyPlan(request)
       if (result.ok) {
         const next: SavedPlan = { values, request, plan: result.plan, generatedAt: new Date().toISOString() }
-        saveLastPlan(next)
+        saveLastPlan(ownerEmail, next)
         setSaved(next)
         setGeneratedCount((count) => count + 1)
       } else {
@@ -129,7 +130,7 @@ export function PlanPage() {
   }
 
   function handleReset() {
-    clearLastPlan()
+    clearLastPlan(ownerEmail)
     setSaved(null)
     setValues(defaultPlanValues())
     setErrors(NO_ERRORS)

@@ -418,6 +418,14 @@
     font-size: 14px;
     color: var(--error);
 }
+.form-notice{
+    margin: 0;
+    padding: 10px 14px;
+    border-left: 3px solid var(--accent);
+    background: var(--paper-2);
+    font-size: 14px;
+    color: var(--ink);
+}
 .field-error::before{
     content: "↳ ";
 }

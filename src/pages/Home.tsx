@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { deleteActivity, listActivities, type Activity } from '../api/activities'
-import { getSession } from '../api/session'
+import { useSession } from '../hooks/useSession'
 import { ActivityForm } from '../components/ActivityForm'
 import { PencilIcon, TrashIcon } from '../components/Icons'
 import { SheetMap } from '../components/SheetMap'
@@ -23,7 +23,7 @@ function dueBadge(activity: Activity) {
 }
 
 export function Home(){
-    const [session] = useState(getSession)
+    const session = useSession()
     const ownerEmail = session?.email ?? ''
     const [activities, setActivities] = useState<Activity[]>([])
     const [loading, setLoading] = useState(true)

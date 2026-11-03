@@ -1,5 +1,7 @@
 import { normalizeEmail } from '../validation/register'
+import { apiFetch } from './http'
 import { API_URL } from './config'
+import type { Session } from './session'
 
 export type RegisterInput = {
   name: string
@@ -43,28 +45,41 @@ export type LoginInput = {
   password: string
 }
 
-export type LoginResult = { ok: true; name: string } | { ok: false; error: 'not-found' | 'wrong-password' }
+export type LoginResult = { ok: true; session: Session } | { ok: false; error: 'invalid-credentials' }
 
-// POST /user/login on compass-backend: 404 -> no account, 401 -> wrong password.
+// POST /user/login on compass-backend: 200 -> { token, expiresAt, user }, 401 -> wrong email or password
+// (the backend gives the same answer for both, on purpose). Any other status is unexpected and throws.
 export async function loginUser(input: LoginInput): Promise<LoginResult> {
-  const email = normalizeEmail(input.email)
   const response = await fetch(`${API_URL}/user/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: input.password }),
+    body: JSON.stringify({ email: normalizeEmail(input.email), password: input.password }),
   })
 
   if (response.ok) {
-    // The backend only answers "Welcome, <name>!", so the name is read from that text.
-    const message = await response.text()
-    const name = /^Welcome, (.+)!$/.exec(message)?.[1] ?? email
-    return { ok: true, name }
-  }
-  if (response.status === 404) {
-    return { ok: false, error: 'not-found' }
+    const body = await response.json()
+    return {
+      ok: true,
+      session: { token: body.token, expiresAt: body.expiresAt, name: body.user.name, email: body.user.email },
+    }
   }
   if (response.status === 401) {
-    return { ok: false, error: 'wrong-password' }
+    return { ok: false, error: 'invalid-credentials' }
   }
   throw new Error(`Unexpected login response: ${response.status}`)
+}
+
+// The token we already confirmed with the backend during this page load.
+let verifiedToken: string | null = null
+
+// GET /user/me: asks the backend whether a stored token still works. A refused token ends the session
+// (apiFetch does that); a network failure is ignored, because the student may just be offline.
+export async function verifySession(token: string): Promise<void> {
+  if (verifiedToken === token) return
+  try {
+    const response = await apiFetch('/user/me')
+    if (response.ok) verifiedToken = token
+  } catch {
+    // offline or server down: keep the session and try again on the next page load
+  }
 }

@@ -7,16 +7,21 @@ import { Home } from './pages/Home';
 import { Activity } from './pages/ActivityPage';
 import { PlanPage } from './pages/PlanPage';
 import { NotFound } from './pages/NotFound';
+import { GuestOnly, RequireAuth } from './components/RouteGuards';
 
 
 function App() {
   return <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/activity/:id" element={<Activity />} />
-          <Route path="/plan" element={<PlanPage />} />
+          <Route element={<GuestOnly />}>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+          </Route>
+          <Route element={<RequireAuth />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/activity/:id" element={<Activity />} />
+            <Route path="/plan" element={<PlanPage />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
 }

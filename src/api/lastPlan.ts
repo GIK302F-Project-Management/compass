@@ -1,5 +1,6 @@
 // The last plan the student generated, kept in localStorage so a refresh does not throw it away
 // (the backend does not store plans, and the AI planner can take a while to answer).
+// It is saved per account, so two students sharing a browser never see each other's plan.
 import type { PlanRequest, StudyPlan } from './studyPlan'
 import type { PlanValues } from '../validation/studyPlan'
 
@@ -10,11 +11,11 @@ export type SavedPlan = {
   generatedAt: string // ISO timestamp
 }
 
-const STORAGE_KEY = 'compass.lastPlan'
+const keyFor = (email: string) => `compass.lastPlan.${email}`
 
-export function loadLastPlan(): SavedPlan | null {
+export function loadLastPlan(email: string): SavedPlan | null {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')
+    const saved = JSON.parse(localStorage.getItem(keyFor(email)) ?? 'null')
     const looksValid =
       Array.isArray(saved?.plan?.sessions) && Array.isArray(saved?.request?.goals) && Array.isArray(saved?.values?.goals)
     return looksValid ? saved : null
@@ -23,10 +24,10 @@ export function loadLastPlan(): SavedPlan | null {
   }
 }
 
-export function saveLastPlan(saved: SavedPlan) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved))
+export function saveLastPlan(email: string, saved: SavedPlan) {
+  localStorage.setItem(keyFor(email), JSON.stringify(saved))
 }
 
-export function clearLastPlan() {
-  localStorage.removeItem(STORAGE_KEY)
+export function clearLastPlan(email: string) {
+  localStorage.removeItem(keyFor(email))
 }
