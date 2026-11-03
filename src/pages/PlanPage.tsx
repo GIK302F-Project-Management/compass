@@ -67,7 +67,8 @@ export function PlanPage() {
       setPrefilledIds(upcoming.map((a) => a.id))
       setValues((current) => {
         // Never overwrite something the student already typed.
-        const untouched = current.goals.length === 1 && isPristineGoal(current.goals[0])
+        const [onlyGoal] = current.goals
+        const untouched = current.goals.length === 1 && onlyGoal !== undefined && isPristineGoal(onlyGoal)
         if (!untouched) return current
         return {
           ...current,

@@ -34,6 +34,8 @@ export function PlanResult({ saved, headingRef }: PlanResultProps) {
   const { request, plan } = saved
   const days = groupByDay(plan.sessions)
   const totalMinutes = days.reduce((sum, day) => sum + day.minutes, 0)
+  const firstDay = days[0]
+  const lastDay = days[days.length - 1]
 
   const scheduled = new Map<string, number>()
   for (const session of plan.sessions) {
@@ -60,8 +62,8 @@ export function PlanResult({ saved, headingRef }: PlanResultProps) {
             {complete ? 'Your plan is ready.' : 'Your plan only fits in part.'}
           </h2>
           <p>
-            {days.length > 0
-              ? `${formatMinutes(totalMinutes)} of study over ${days.length} ${days.length === 1 ? 'day' : 'days'}, from ${formatDueDate(days[0].date)} to ${formatDueDate(days[days.length - 1].date)}.`
+            {firstDay && lastDay
+              ? `${formatMinutes(totalMinutes)} of study over ${days.length} ${days.length === 1 ? 'day' : 'days'}, from ${formatDueDate(firstDay.date)} to ${formatDueDate(lastDay.date)}.`
               : 'None of your goals could be scheduled.'}
           </p>
           <p className="kicker">

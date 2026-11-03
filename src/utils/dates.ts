@@ -1,6 +1,6 @@
 // Due dates are stored as YYYY-MM-DD; build the date by parts so it is not shifted by the timezone.
 export function parseDueDate(dueDate: string) {
-  const [year, month, day] = dueDate.split('-').map(Number)
+  const [year = 0, month = 1, day = 1] = dueDate.split('-').map(Number)
   return new Date(year, month - 1, day)
 }
 
