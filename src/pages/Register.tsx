@@ -1,33 +1,24 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import { registerUser } from '../api/auth'
 import { ContourBackground } from '../components/ContourBackground'
 import { FormField } from '../components/FormField'
 import { TopBar } from '../components/TopBar'
+import { useFormState } from '../hooks/useFormState'
 import {
   MIN_PASSWORD_LENGTH,
   UNIVERSITY_EMAIL_DOMAIN,
   validateRegister,
-  type RegisterErrors,
   type RegisterValues,
 } from '../validation/register'
 
+const INVALID_MESSAGE = 'Compass could not accept these details. Check them and try again.'
 const EMPTY_VALUES: RegisterValues = { name: '', email: '', password: '', confirmPassword: '' }
 
 export function Register() {
-  const [values, setValues] = useState<RegisterValues>(EMPTY_VALUES)
-  const [errors, setErrors] = useState<RegisterErrors>({})
+  const { values, errors, setErrors, bind } = useFormState(EMPTY_VALUES)
   const [submitting, setSubmitting] = useState(false)
   const [registered, setRegistered] = useState(false)
-
-  function handleChange(field: keyof RegisterValues) {
-    return (event: ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [field]: event.target.value })
-      if (errors[field] || errors.form) {
-        setErrors({ ...errors, [field]: undefined, form: undefined })
-      }
-    }
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -41,10 +32,8 @@ export function Register() {
       if (result.ok) {
         setRegistered(true)
       } else {
-        const fieldErrors = result.errors
-        setErrors(Object.keys(fieldErrors).length > 0
-          ? fieldErrors
-          : { email: `Use your university email (name@${UNIVERSITY_EMAIL_DOMAIN}).` })
+        // The backend checks the same rules as the form; show its message next to the field it names.
+        setErrors(Object.keys(result.fieldErrors).length > 0 ? result.fieldErrors : { form: INVALID_MESSAGE })
       }
     } catch {
       setErrors({ form: 'Something went wrong while creating your account. Please try again.' })
@@ -85,13 +74,13 @@ export function Register() {
           ) : (
             <form className="auth-card" onSubmit={handleSubmit} noValidate>
               <h1>Create your account</h1>
-              <FormField id="name" label="Name" value={values.name} onChange={handleChange('name')} autoComplete="name" error={errors.name} />
+              <FormField id="name" label="Name" value={values.name} onChange={bind('name')} autoComplete="name" error={errors.name} />
               <FormField
                 id="email"
                 label="University email"
                 type="email"
                 value={values.email}
-                onChange={handleChange('email')}
+                onChange={bind('email')}
                 autoComplete="email"
                 error={errors.email}
               />
@@ -101,7 +90,7 @@ export function Register() {
                 hint={`At least ${MIN_PASSWORD_LENGTH} characters.`}
                 type="password"
                 value={values.password}
-                onChange={handleChange('password')}
+                onChange={bind('password')}
                 autoComplete="new-password"
                 error={errors.password}
               />
@@ -110,7 +99,7 @@ export function Register() {
                 label="Repeat password"
                 type="password"
                 value={values.confirmPassword}
-                onChange={handleChange('confirmPassword')}
+                onChange={bind('confirmPassword')}
                 autoComplete="new-password"
                 error={errors.confirmPassword}
               />

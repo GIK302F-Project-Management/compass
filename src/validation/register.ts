@@ -1,5 +1,8 @@
 export const UNIVERSITY_EMAIL_DOMAIN = 'alumni.mondragon.edu'
 export const MIN_PASSWORD_LENGTH = 8
+// These limits mirror the backend (RegisterRequest), so it never has to refuse a form we accepted.
+export const MAX_NAME_LENGTH = 100
+export const MAX_PASSWORD_BYTES = 72 // BCrypt ignores everything after 72 bytes
 
 export type RegisterValues = {
   name: string
@@ -24,6 +27,8 @@ export function validateRegister(values: RegisterValues): RegisterErrors {
 
   if (!values.name.trim()) {
     errors.name = 'Please enter your name.'
+  } else if (values.name.trim().length > MAX_NAME_LENGTH) {
+    errors.name = `The name must have at most ${MAX_NAME_LENGTH} characters.`
   }
 
   if (!values.email.trim()) {
@@ -34,6 +39,8 @@ export function validateRegister(values: RegisterValues): RegisterErrors {
 
   if (values.password.length < MIN_PASSWORD_LENGTH) {
     errors.password = `The password must have at least ${MIN_PASSWORD_LENGTH} characters.`
+  } else if (new TextEncoder().encode(values.password).length > MAX_PASSWORD_BYTES) {
+    errors.password = 'The password is too long (accented letters and emojis count as more than one character).'
   }
 
   if (values.confirmPassword !== values.password) {

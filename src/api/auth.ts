@@ -1,6 +1,6 @@
 import { normalizeEmail } from '../validation/register'
-import { apiFetch } from './http'
 import { API_URL } from './config'
+import { apiFetch } from './http'
 import type { Session } from './session'
 
 export type RegisterInput = {
@@ -9,9 +9,9 @@ export type RegisterInput = {
   password: string
 }
 
-export type RegisterFieldErrors = Partial<Record<keyof RegisterInput, string>>
+export type RegisterField = 'name' | 'email' | 'password'
 
-export type RegisterResult = { ok: true } | { ok: false; errors: RegisterFieldErrors }
+export type RegisterResult = { ok: true } | { ok: false; error: 'invalid'; fieldErrors: Partial<Record<RegisterField, string>> }
 
 // POST /user/register on compass-backend. It answers 202 even when the email already has an
 // account (so nobody can find out which emails are registered), and 400 with
@@ -27,10 +27,21 @@ export async function registerUser(input: RegisterInput): Promise<RegisterResult
     return { ok: true }
   }
   if (response.status === 400) {
-    const body: { errors?: RegisterFieldErrors } = await response.json().catch(() => ({}))
-    return { ok: false, errors: body.errors ?? {} }
+    const body: unknown = await response.json().catch(() => null)
+    return { ok: false, error: 'invalid', fieldErrors: readFieldErrors(body) }
   }
   throw new Error(`Unexpected register response: ${response.status}`)
+}
+
+// Keeps only the messages the form has a field for: { errors: { email: "..." } } -> { email: "..." }
+function readFieldErrors(body: unknown): Partial<Record<RegisterField, string>> {
+  const errors = isRecord(body) && isRecord(body.errors) ? body.errors : {}
+  const fieldErrors: Partial<Record<RegisterField, string>> = {}
+  for (const field of ['name', 'email', 'password'] as const) {
+    const message = errors[field]
+    if (typeof message === 'string') fieldErrors[field] = message
+  }
+  return fieldErrors
 }
 
 export type LoginInput = {
@@ -56,16 +67,31 @@ export async function loginUser(input: LoginInput): Promise<LoginResult> {
   })
 
   if (response.ok) {
-    const body: LoginResponse = await response.json()
-    return {
-      ok: true,
-      session: { name: body.user.name, email: body.user.email, token: body.token, expiresAt: body.expiresAt },
-    }
+    return { ok: true, session: toSession(await response.json()) }
   }
   if (response.status === 401 || response.status === 400) {
     return { ok: false, error: 'invalid-credentials' }
   }
   throw new Error(`Unexpected login response: ${response.status}`)
+}
+
+// Never trust the shape of a response blindly: a wrong one must fail here, not deep inside a page.
+function toSession(body: unknown): Session {
+  if (
+    isRecord(body) &&
+    typeof body.token === 'string' &&
+    typeof body.expiresAt === 'string' &&
+    isRecord(body.user) &&
+    typeof body.user.name === 'string' &&
+    typeof body.user.email === 'string'
+  ) {
+    return { token: body.token, expiresAt: body.expiresAt, name: body.user.name, email: body.user.email }
+  }
+  throw new Error('Unexpected login response: missing token or user')
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null
 }
 
 // The token we already confirmed with the backend during this page load.

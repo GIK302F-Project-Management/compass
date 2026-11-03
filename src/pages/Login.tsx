@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link, useLocation } from 'react-router'
 import { loginUser } from '../api/auth'
 import { saveSession } from '../api/session'
@@ -6,24 +6,15 @@ import { ContourBackground } from '../components/ContourBackground'
 import { FormField } from '../components/FormField'
 import type { LoginRedirectState } from '../components/RouteGuards'
 import { TopBar } from '../components/TopBar'
-import { validateLogin, type LoginErrors, type LoginValues } from '../validation/login'
+import { useFormState } from '../hooks/useFormState'
+import { validateLogin, type LoginValues } from '../validation/login'
 
 const EMPTY_VALUES: LoginValues = { email: '', password: '' }
 
 export function Login() {
   const sessionExpired = (useLocation().state as LoginRedirectState | null)?.expired === true
-  const [values, setValues] = useState<LoginValues>(EMPTY_VALUES)
-  const [errors, setErrors] = useState<LoginErrors>({})
+  const { values, setValues, errors, setErrors, bind } = useFormState(EMPTY_VALUES)
   const [submitting, setSubmitting] = useState(false)
-
-  function handleChange(field: keyof LoginValues) {
-    return (event: ChangeEvent<HTMLInputElement>) => {
-      setValues({ ...values, [field]: event.target.value })
-      if (errors[field] || errors.form) {
-        setErrors({ ...errors, [field]: undefined, form: undefined })
-      }
-    }
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -39,7 +30,7 @@ export function Login() {
         saveSession(result.session)
       } else {
         // One message for both cases, like the backend, so it never reveals which emails have an account.
-        setValues({ ...values, password: '' })
+        setValues((current) => ({ ...current, password: '' }))
         setErrors({ form: 'Incorrect email or password.' })
       }
     } catch {
@@ -80,7 +71,7 @@ export function Login() {
               label="University email"
               type="email"
               value={values.email}
-              onChange={handleChange('email')}
+              onChange={bind('email')}
               autoComplete="email"
               error={errors.email}
             />
@@ -89,7 +80,7 @@ export function Login() {
               label="Password"
               type="password"
               value={values.password}
-              onChange={handleChange('password')}
+              onChange={bind('password')}
               autoComplete="current-password"
               error={errors.password}
             />
