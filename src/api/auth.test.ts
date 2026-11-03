@@ -17,7 +17,12 @@ describe('loginUser', () => {
 
     expect(result).toEqual({
       ok: true,
-      session: { token: 'jwt-token', expiresAt: '2026-11-03T14:00:00Z', name: 'Ana', email: 'ana@alumni.mondragon.edu' },
+      session: {
+        token: 'jwt-token',
+        expiresAt: '2026-11-03T14:00:00Z',
+        name: 'Ana',
+        email: 'ana@alumni.mondragon.edu',
+      },
     })
     expect(sentBody(fetchMock)).toEqual({ email: 'ana@alumni.mondragon.edu', password: 'secret' })
   })

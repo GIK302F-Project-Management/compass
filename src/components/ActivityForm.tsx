@@ -52,7 +52,13 @@ export function ActivityForm({ ownerEmail, activity, onSaved, onCancel }: Activi
         <span>{activity ? 'Edit sheet' : 'New sheet'}</span>
       </div>
       <div className="sheet-body">
-        <FormField id={`${idPrefix}-title`} label="Name" value={values.title} onChange={handleChange('title')} error={errors.title} />
+        <FormField
+          id={`${idPrefix}-title`}
+          label="Name"
+          value={values.title}
+          onChange={handleChange('title')}
+          error={errors.title}
+        />
         <FormField
           id={`${idPrefix}-subject`}
           label="Subject"

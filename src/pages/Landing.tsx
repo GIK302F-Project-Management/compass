@@ -3,9 +3,18 @@ import { RouteMap } from '../components/RouteMap'
 import { TopBar } from '../components/TopBar'
 
 const LEGEND = [
-  { title: 'Plot your path', text: 'Add your subjects, goals and deadlines by hand, or let the AI planner draft them for you.' },
-  { title: 'Get a route', text: 'Compass suggests a study plan step by step. Follow it as it is or redraw it your way.' },
-  { title: 'Check your bearing', text: 'Progress, pace and a clear on track or off course status for every goal, before it is too late.' },
+  {
+    title: 'Plot your path',
+    text: 'Add your subjects, goals and deadlines by hand, or let the AI planner draft them for you.',
+  },
+  {
+    title: 'Get a route',
+    text: 'Compass suggests a study plan step by step. Follow it as it is or redraw it your way.',
+  },
+  {
+    title: 'Check your bearing',
+    text: 'Progress, pace and a clear on track or off course status for every goal, before it is too late.',
+  },
 ]
 
 export function Landing() {

@@ -20,7 +20,10 @@ export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps)
   const indexes = route.sessions.map((_, index) => index)
 
   const hasToday = route.sessions.some((item) => item.date === today)
-  const nextDate = route.sessions.map((item) => item.date).filter((date) => date > today).sort()[0]
+  const nextDate = route.sessions
+    .map((item) => item.date)
+    .filter((date) => date > today)
+    .sort()[0]
   const shownDate = hasToday ? today : nextDate
   const shown = shownDate ? indexes.filter((index) => route.sessions[index].date === shownDate) : []
   const shownMinutes = shown.reduce((sum, index) => sum + route.sessions[index].durationMinutes, 0)
@@ -34,8 +37,12 @@ export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps)
   return (
     <section className="today-card" aria-labelledby="today-card-heading">
       <header className="today-card-head">
-        <p className="kicker" id="today-card-heading">{heading}</p>
-        <span className="today-card-count">{doneCount} of {total} done</span>
+        <p className="kicker" id="today-card-heading">
+          {heading}
+        </p>
+        <span className="today-card-count">
+          {doneCount} of {total} done
+        </span>
       </header>
       <div
         className="progress-track"
@@ -65,7 +72,9 @@ export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps)
               />
             ))}
           </ul>
-          <p className="today-card-note">{formatMinutes(shownMinutes)} planned{shownDate === today ? ' today' : ''}.</p>
+          <p className="today-card-note">
+            {formatMinutes(shownMinutes)} planned{shownDate === today ? ' today' : ''}.
+          </p>
         </>
       ) : (
         <p className="today-card-note">No more study days left on this route.</p>
@@ -73,15 +82,20 @@ export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps)
 
       {behind > 0 && !finished && (
         <p className="today-card-behind">
-          {behind} earlier {behind === 1 ? 'session is' : 'sessions are'} not done yet. Re-plotting from today can fit {behind === 1 ? 'it' : 'them'} back in.
+          {behind} earlier {behind === 1 ? 'session is' : 'sessions are'} not done yet. Re-plotting from today can fit{' '}
+          {behind === 1 ? 'it' : 'them'} back in.
         </p>
       )}
 
       <div className="today-card-actions">
         {(finished || !shownDate) && (
-          <Link to="/route?new=1" className="button button-small button-primary">Plot a new route</Link>
+          <Link to="/route?new=1" className="button button-small button-primary">
+            Plot a new route
+          </Link>
         )}
-        <Link to="/route" className="button button-small">Open route →</Link>
+        <Link to="/route" className="button button-small">
+          Open route →
+        </Link>
       </div>
     </section>
   )

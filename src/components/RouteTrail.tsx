@@ -58,8 +58,12 @@ export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProp
 
       <header className="trail-head">
         <div className="trail-head-row">
-          <p className="kicker" id="route-trail-heading">{finished ? 'Route complete' : 'Your route'}</p>
-          <span className="today-card-count">{doneCount} of {total} done</span>
+          <p className="kicker" id="route-trail-heading">
+            {finished ? 'Route complete' : 'Your route'}
+          </p>
+          <span className="today-card-count">
+            {doneCount} of {total} done
+          </span>
         </div>
         <div
           className="progress-track"
@@ -89,7 +93,10 @@ export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProp
               >
                 <span className="trail-marker" aria-hidden="true">
                   {day.deadlines.length > 0 && (
-                    <svg viewBox="0 0 18 18"><line className="map-pole" x1="5" y1="2" x2="5" y2="17" /><path className="map-flag" d="M6 2 L16 5.5 L6 9 Z" /></svg>
+                    <svg viewBox="0 0 18 18">
+                      <line className="map-pole" x1="5" y1="2" x2="5" y2="17" />
+                      <path className="map-flag" d="M6 2 L16 5.5 L6 9 Z" />
+                    </svg>
                   )}
                 </span>
 
@@ -100,7 +107,10 @@ export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProp
                     aria-expanded={open}
                     onClick={() => setOpenDate(open ? null : day.date)}
                   >
-                    <span className="kicker">{isToday ? 'Today · ' : ''}{formatDueDate(day.date)}</span>
+                    <span className="kicker">
+                      {isToday ? 'Today · ' : ''}
+                      {formatDueDate(day.date)}
+                    </span>
                     <span className="trail-minutes">
                       {doneHere > 0 ? `${doneHere}/${day.sessions.length} · ` : ''}
                       {formatMinutes(day.minutes)}
@@ -108,7 +118,10 @@ export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProp
                   </button>
                 ) : (
                   <div className="trail-stop-head">
-                    <span className="kicker">{isToday ? 'Today · ' : ''}{formatDueDate(day.date)}</span>
+                    <span className="kicker">
+                      {isToday ? 'Today · ' : ''}
+                      {formatDueDate(day.date)}
+                    </span>
                   </div>
                 )}
 
@@ -147,14 +160,19 @@ export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProp
       <footer className="trail-foot">
         {behind > 0 && !finished && (
           <p className="today-card-behind">
-            {behind} earlier {behind === 1 ? 'session' : 'sessions'} not done. Re-plot from today to fit {behind === 1 ? 'it' : 'them'} back in.
+            {behind} earlier {behind === 1 ? 'session' : 'sessions'} not done. Re-plot from today to fit{' '}
+            {behind === 1 ? 'it' : 'them'} back in.
           </p>
         )}
         <div className="today-card-actions">
           {(finished || hereIndex === -1) && (
-            <Link to="/route?new=1" className="button button-small button-primary">Plot a new route</Link>
+            <Link to="/route?new=1" className="button button-small button-primary">
+              Plot a new route
+            </Link>
           )}
-          <Link to="/route" className="button button-small">Open route →</Link>
+          <Link to="/route" className="button button-small">
+            Open route →
+          </Link>
         </div>
       </footer>
     </aside>

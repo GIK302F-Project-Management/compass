@@ -11,7 +11,8 @@ export type RegisterInput = {
 
 export type RegisterField = 'name' | 'email' | 'password'
 
-export type RegisterResult = { ok: true } | { ok: false; error: 'invalid'; fieldErrors: Partial<Record<RegisterField, string>> }
+export type RegisterResult =
+  { ok: true } | { ok: false; error: 'invalid'; fieldErrors: Partial<Record<RegisterField, string>> }
 
 // POST /user/register on compass-backend. It answers 202 even when the email already has an
 // account (so nobody can find out which emails are registered), and 400 with

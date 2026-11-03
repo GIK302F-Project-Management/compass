@@ -74,7 +74,14 @@ export function Register() {
           ) : (
             <form className="auth-card" onSubmit={handleSubmit} noValidate>
               <h1>Create your account</h1>
-              <FormField id="name" label="Name" value={values.name} onChange={bind('name')} autoComplete="name" error={errors.name} />
+              <FormField
+                id="name"
+                label="Name"
+                value={values.name}
+                onChange={bind('name')}
+                autoComplete="name"
+                error={errors.name}
+              />
               <FormField
                 id="email"
                 label="University email"

@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  MAX_NAME_LENGTH,
-  isUniversityEmail,
-  normalizeEmail,
-  validateRegister,
-  type RegisterValues,
-} from './register'
+import { MAX_NAME_LENGTH, isUniversityEmail, normalizeEmail, validateRegister, type RegisterValues } from './register'
 
 const VALID: RegisterValues = {
   name: 'Ana',
@@ -15,16 +9,24 @@ const VALID: RegisterValues = {
 }
 
 describe('isUniversityEmail', () => {
-  it.each(['ana@alumni.mondragon.edu', '  ANA@Alumni.Mondragon.edu ', 'a.b+c@alumni.mondragon.edu'])('accepts %j', (email) => {
-    expect(isUniversityEmail(email)).toBe(true)
-  })
-
-  it.each(['', 'ana', 'ana@gmail.com', '@alumni.mondragon.edu', 'a b@alumni.mondragon.edu', 'a@b@alumni.mondragon.edu', 'ana@alumni.mondragon.edu.evil.com'])(
-    'rejects %j',
+  it.each(['ana@alumni.mondragon.edu', '  ANA@Alumni.Mondragon.edu ', 'a.b+c@alumni.mondragon.edu'])(
+    'accepts %j',
     (email) => {
-      expect(isUniversityEmail(email)).toBe(false)
+      expect(isUniversityEmail(email)).toBe(true)
     },
   )
+
+  it.each([
+    '',
+    'ana',
+    'ana@gmail.com',
+    '@alumni.mondragon.edu',
+    'a b@alumni.mondragon.edu',
+    'a@b@alumni.mondragon.edu',
+    'ana@alumni.mondragon.edu.evil.com',
+  ])('rejects %j', (email) => {
+    expect(isUniversityEmail(email)).toBe(false)
+  })
 })
 
 describe('normalizeEmail', () => {

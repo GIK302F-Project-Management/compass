@@ -17,7 +17,9 @@ export function loadLastPlan(email: string): SavedPlan | null {
   try {
     const saved = JSON.parse(localStorage.getItem(keyFor(email)) ?? 'null')
     const looksValid =
-      Array.isArray(saved?.plan?.sessions) && Array.isArray(saved?.request?.goals) && Array.isArray(saved?.values?.goals)
+      Array.isArray(saved?.plan?.sessions) &&
+      Array.isArray(saved?.request?.goals) &&
+      Array.isArray(saved?.values?.goals)
     return looksValid ? saved : null
   } catch {
     return null

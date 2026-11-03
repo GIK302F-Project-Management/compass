@@ -90,13 +90,16 @@ describe('GuestOnly', () => {
     expect(screen.getByText('plan page')).toBeInTheDocument()
   })
 
-  it.each(['//evil.example', 'https://evil.example', 'plan'])('ignores a destination that is not a local path: %s', (from) => {
-    saveSession(makeSession())
+  it.each(['//evil.example', 'https://evil.example', 'plan'])(
+    'ignores a destination that is not a local path: %s',
+    (from) => {
+      saveSession(makeSession())
 
-    renderApp({ pathname: '/login', state: { from } })
+      renderApp({ pathname: '/login', state: { from } })
 
-    expect(screen.getByText('home page')).toBeInTheDocument()
-  })
+      expect(screen.getByText('home page')).toBeInTheDocument()
+    },
+  )
 
   it('shows the page to a visitor', () => {
     startLoggedOut()

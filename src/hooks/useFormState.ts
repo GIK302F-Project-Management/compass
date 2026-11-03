@@ -14,7 +14,9 @@ export function useFormState<V extends Record<string, string>>(initialValues: V)
       const { value } = event.target
       setValues((current) => ({ ...current, [field]: value }))
       setErrors((current) =>
-        current[field] || current.form ? ({ ...current, [field]: undefined, form: undefined } as FormErrors<V>) : current,
+        current[field] || current.form
+          ? ({ ...current, [field]: undefined, form: undefined } as FormErrors<V>)
+          : current,
       )
     }
   }

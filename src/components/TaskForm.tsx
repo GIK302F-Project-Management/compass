@@ -56,7 +56,13 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
   return (
     <form className="task-form" onSubmit={handleSubmit} noValidate>
       <p className="kicker">{task ? 'Edit task' : 'New task'}</p>
-      <FormField id={`${idPrefix}-title`} label="Task" value={values.title} onChange={handleChange('title')} error={errors.title} />
+      <FormField
+        id={`${idPrefix}-title`}
+        label="Task"
+        value={values.title}
+        onChange={handleChange('title')}
+        error={errors.title}
+      />
       <FormField
         id={`${idPrefix}-details`}
         label="Details"
