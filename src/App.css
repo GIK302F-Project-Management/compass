@@ -58,13 +58,19 @@
     font-weight: 600;
     letter-spacing: -0.02em;
 }
-.logo-tag{
-    padding: 1px 6px;
-    border: 1px solid currentColor;
-    border-radius: 2px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
+.logo-mgep{
+    display: block;
+    height: 30px;
+    width: auto;
+}
+/* The logo's small print is dark navy, so it needs a light plate on the dark theme. */
+@media (prefers-color-scheme: dark) {
+    .logo-mgep{
+        box-sizing: content-box;
+        padding: 3px 5px;
+        border-radius: 2px;
+        background: #fff;
+    }
 }
 
 /* ---------- Shared bits ---------- */

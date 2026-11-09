@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { CompassRose } from './MapShapes'
+import mgepLogo from '../assets/mgep-logo.png'
 
-// "MGEP" tag is a placeholder until the official MGEP logo file is added to src/assets.
 export function Logo() {
   return (
     <Link to="/" className="logo" aria-label="Compass, MGEP - go to the main page">
@@ -9,7 +9,7 @@ export function Logo() {
         <CompassRose size={13} />
       </svg>
       <span className="logo-name">Compass</span>
-      <span className="logo-tag">MGEP</span>
+      <img className="logo-mgep" src={mgepLogo} alt="" />
     </Link>
   )
 }
