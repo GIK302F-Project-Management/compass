@@ -3,6 +3,8 @@ import {
   deleteMockActivity,
   findMockActivitiesByOwner,
   findMockActivityById,
+  inviteMockCollaborator,
+  listMockCollaborators,
   updateMockActivity,
   type MockActivity,
 } from '../mocks/activities'
@@ -31,6 +33,14 @@ export async function listActivities(ownerEmail: string): Promise<Activity[]> {
 // GET /activity/<id>, which returns the activity, or 404 (here: null) when it does not exist.
 export async function getActivity(id: string): Promise<Activity | null> {
   return findMockActivityById(id) ?? null
+}
+
+export async function listCollaborators(activityId: string): Promise<string[]> {
+  return listMockCollaborators(activityId)
+}
+
+export async function inviteCollaborator(activityId: string, collaboratorEmail: string): Promise<Activity> {
+  return inviteMockCollaborator(activityId, collaboratorEmail)
 }
 
 // Mock implementation. When the backend is ready, replace the body with
