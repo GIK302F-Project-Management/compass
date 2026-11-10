@@ -1,0 +1,32 @@
+.members {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.members h3 {
+  margin: 0;
+}
+.member-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.member-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1.5px solid var(--ink);
+}
+.member-name {
+  margin-right: auto;
+  overflow-wrap: anywhere;
+}
+.member-role {
+  font: 500 12px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}

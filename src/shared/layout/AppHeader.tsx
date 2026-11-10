@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 import { MainNav } from './MainNav'
+import { PlanSwitcher } from './PlanSwitcher'
 import { TopBar } from './TopBar'
 import { UserMenu } from './UserMenu'
 
@@ -13,7 +14,15 @@ export function AppHeader({ title }: AppHeaderProps) {
 
   return (
     <>
-      <TopBar title={title} actions={<UserMenu />} />
+      <TopBar
+        title={title}
+        actions={
+          <>
+            <PlanSwitcher />
+            <UserMenu />
+          </>
+        }
+      />
       <MainNav />
     </>
   )

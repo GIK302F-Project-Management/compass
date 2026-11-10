@@ -16,26 +16,33 @@ export type SavedRoute = StudyPlanResponse & {
   createdAt: string
 }
 
-// The last route is remembered per user in localStorage (the backend does not store plans).
-// v2: goals are tasks (v1 routes planned whole activities and are ignored).
-function storageKey(ownerEmail: string) {
-  return `compass.route.v2.${ownerEmail}`
+// Whose route it is: a route is personal (the backend does not store it) and made for one plan,
+// because its goals are that plan's tasks.
+export type RouteScope = {
+  ownerEmail: string
+  planId: string
 }
 
-export function loadRoute(ownerEmail: string): SavedRoute | null {
+// The last route is remembered per student and plan in localStorage.
+// v3: goals are the tasks of a shared plan (v2 routes used tasks kept in the browser and are ignored).
+function storageKey({ ownerEmail, planId }: RouteScope) {
+  return `compass.route.v3.${ownerEmail}.${planId}`
+}
+
+export function loadRoute(scope: RouteScope): SavedRoute | null {
   try {
-    return JSON.parse(localStorage.getItem(storageKey(ownerEmail)) ?? 'null')
+    return JSON.parse(localStorage.getItem(storageKey(scope)) ?? 'null')
   } catch {
     return null
   }
 }
 
-export function saveRoute(ownerEmail: string, route: SavedRoute) {
-  localStorage.setItem(storageKey(ownerEmail), JSON.stringify(route))
+export function saveRoute(scope: RouteScope, route: SavedRoute) {
+  localStorage.setItem(storageKey(scope), JSON.stringify(route))
 }
 
-export function clearRoute(ownerEmail: string) {
-  localStorage.removeItem(storageKey(ownerEmail))
+export function clearRoute(scope: RouteScope) {
+  localStorage.removeItem(storageKey(scope))
 }
 
 // Backend warnings look like "Goal <id>: 45 minutes could not be scheduled ...".

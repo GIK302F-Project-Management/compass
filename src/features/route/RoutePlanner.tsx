@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { listActivities, type Activity } from '@/features/activities/api/activities'
+import type { Plan } from '@/shared/api/plans'
+import { useActivePlan } from '@/shared/plans/useCurrentPlan'
 import {
   generateStudyPlan,
   type PlanFailure,
@@ -9,17 +11,15 @@ import {
   type StudySession,
 } from '@/shared/api/studyPlans'
 import { getSession } from '@/shared/session/session'
-import { loadRoute, parseWarning, saveRoute, type GoalInfo, type SavedRoute } from './api/savedRoute'
+import { loadRoute, parseWarning, saveRoute, type GoalInfo, type RouteScope, type SavedRoute } from './api/savedRoute'
 import { isSessionDone, toggleSession } from './api/routeProgress'
-import { listTasks, updateTask, type Task } from '@/features/activities/api/tasks'
+import { listPlanTasks, updateTask, type Task } from '@/features/activities/api/tasks'
 import { ContourHill } from '@/shared/ui/MapShapes'
 import { SessionItem } from './SessionItem'
-import { AppHeader } from '@/shared/layout/AppHeader'
-import { Main } from '@/shared/layout/Main'
 import { daysBetween, formatDueDate, todayIso } from '@/shared/utils/dates'
 import { formatMinutes } from '@/shared/utils/duration'
 import { estimateToHours, MAX_ESTIMATE_HOURS, parseEstimate } from '@/features/activities/validation/task'
-import './RoutePlannerPage.css'
+import './RoutePlanner.css'
 
 const MAX_DAYS_AHEAD = 365 // the backend rejects deadlines further than this from the start date
 const MAX_GOALS = 100 // the backend accepts at most 100 goals per plan
@@ -80,9 +80,16 @@ function sheetLabel(index: number) {
   return index < 0 ? '··' : String(index + 1).padStart(2, '0')
 }
 
-export function RoutePlannerPage() {
+// The route is made for one plan, so switching plans starts the page over (hence the key).
+export function RoutePlanner() {
+  const plan = useActivePlan()
+  return <RoutePlannerForPlan key={plan.id} plan={plan} />
+}
+
+function RoutePlannerForPlan({ plan }: { plan: Plan }) {
   const [session] = useState(getSession)
   const ownerEmail = session?.email ?? ''
+  const scope: RouteScope = { ownerEmail, planId: plan.id }
   const [searchParams] = useSearchParams()
   const focusActivityId = searchParams.get('activity')
   // ?new=1 opens the briefing even when a route is saved ("Plot a new route").
@@ -91,7 +98,7 @@ export function RoutePlannerPage() {
   const [activities, setActivities] = useState<Activity[]>([])
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
-  const [route, setRoute] = useState<SavedRoute | null>(() => loadRoute(ownerEmail))
+  const [route, setRoute] = useState<SavedRoute | null>(() => loadRoute(scope))
   const [phase, setPhase] = useState<Phase>(() => (route && !focusActivityId && !startNew ? 'itinerary' : 'briefing'))
 
   const [startDate, setStartDate] = useState(() => todayIso())
@@ -106,10 +113,8 @@ export function RoutePlannerPage() {
 
   useEffect(() => {
     if (!ownerEmail) return
-    listActivities(ownerEmail)
-      .then(async (foundActivities) => {
-        const taskLists = await Promise.all(foundActivities.map((activity) => listTasks(activity.id)))
-        const foundTasks = taskLists.flat()
+    Promise.all([listActivities(plan.id), listPlanTasks(plan.id)])
+      .then(([foundActivities, foundTasks]) => {
         setActivities(foundActivities)
         setTasks(foundTasks)
 
@@ -126,8 +131,9 @@ export function RoutePlannerPage() {
         }
         setPicks(initial)
       })
+      .catch(() => setError('Could not load the tasks of this plan. Refresh the page to try again.'))
       .finally(() => setLoading(false))
-  }, [ownerEmail, focusActivityId])
+  }, [ownerEmail, plan.id, focusActivityId])
 
   // Stop waiting for the AI if the user leaves the page.
   useEffect(() => () => abortRef.current?.abort(), [])
@@ -135,8 +141,7 @@ export function RoutePlannerPage() {
   if (!session || expired) {
     return (
       <>
-        <AppHeader title="Route planner" />
-        <Main className="route-page">
+        <div className="route-page">
           <p className="kicker">Off the map</p>
           <h2 className="route-title">Log in to plot a route.</h2>
           <p>
@@ -146,7 +151,7 @@ export function RoutePlannerPage() {
             </Link>{' '}
             and come back here.
           </p>
-        </Main>
+        </div>
       </>
     )
   }
@@ -227,13 +232,18 @@ export function RoutePlannerPage() {
       return task.estimatedMinutes !== goal.estimatedMinutes
     })
     if (changed.length > 0) {
-      const updated = await Promise.all(
-        changed.map((task) =>
-          updateTask(task.id, { estimatedMinutes: goals.find((item) => item.id === task.id)!.estimatedMinutes }),
-        ),
-      )
-      const updatedById = new Map(updated.map((task) => [task.id, task]))
-      setTasks((current) => current.map((task) => updatedById.get(task.id) ?? task))
+      try {
+        const updated = await Promise.all(
+          changed.map((task) =>
+            updateTask(task.id, { estimatedMinutes: goals.find((item) => item.id === task.id)!.estimatedMinutes }),
+          ),
+        )
+        const updatedById = new Map(updated.map((task) => [task.id, task]))
+        setTasks((current) => current.map((task) => updatedById.get(task.id) ?? task))
+      } catch {
+        setError('Could not save the estimates on the tasks. Please try again.')
+        return
+      }
     }
 
     const request: StudyPlanRequest = { startDate, dailyAvailableMinutes: dailyMinutes, goals }
@@ -268,7 +278,7 @@ export function RoutePlannerPage() {
         return
       }
       const saved: SavedRoute = { ...result.plan, request, goals, checked: [], createdAt: new Date().toISOString() }
-      saveRoute(ownerEmail, saved)
+      saveRoute(scope, saved)
       setRoute(saved)
       setPhase('itinerary')
     } catch (caught) {
@@ -302,23 +312,27 @@ export function RoutePlannerPage() {
 
   async function handleToggle(index: number) {
     if (!route) return
-    const result = await toggleSession(ownerEmail, route, index, taskById)
-    setRoute(result.route)
-    const updated = result.task
-    if (updated) setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)))
+    try {
+      const result = await toggleSession(scope, route, index, taskById)
+      setRoute(result.route)
+      const updated = result.task
+      if (updated) setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)))
+      setError(null)
+    } catch {
+      setError('Could not save that change. Please try again.')
+    }
   }
 
   if (phase === 'plotting') {
     return (
       <>
-        <AppHeader title="Route planner" />
-        <Main className="route-page">
+        <div className="route-page">
           <Plotting
             goals={plotting.goals}
             dailyMinutes={plotting.dailyMinutes}
             onCancel={() => abortRef.current?.abort()}
           />
-        </Main>
+        </div>
       </>
     )
   }
@@ -326,8 +340,12 @@ export function RoutePlannerPage() {
   if (phase === 'itinerary' && route) {
     return (
       <>
-        <AppHeader title="Route planner" />
-        <Main className="route-page">
+        <div className="route-page">
+          {error && (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          )}
           <Itinerary
             route={route}
             taskExists={(goalId) => taskById.has(goalId)}
@@ -336,15 +354,14 @@ export function RoutePlannerPage() {
             onReplot={replot}
             onNewBriefing={() => setPhase('briefing')}
           />
-        </Main>
+        </div>
       </>
     )
   }
 
   return (
     <>
-      <AppHeader title="Route planner" />
-      <Main className="route-page">
+      <div className="route-page">
         <header className="route-header">
           <p className="kicker">Route briefing</p>
           <h2 className="route-title">
@@ -529,7 +546,7 @@ export function RoutePlannerPage() {
             </button>
           </div>
         </form>
-      </Main>
+      </div>
     </>
   )
 }

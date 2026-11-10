@@ -1,0 +1,15 @@
+.join-page {
+  width: calc(100% - 32px);
+  max-width: 560px;
+  box-sizing: border-box;
+  margin: 3rem auto 4rem;
+}
+.join-sheet .sheet-body p {
+  margin: 0;
+}
+.join-sheet .sheet-actions {
+  gap: 20px;
+}
+.join-sheet .sheet-actions > :first-child {
+  margin-right: 0;
+}

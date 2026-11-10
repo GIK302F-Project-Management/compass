@@ -4,7 +4,7 @@ import { validateNewActivity, type NewActivityErrors, type NewActivityValues } f
 import { FormField } from '@/shared/ui/FormField'
 
 type ActivityFormProps = {
-  ownerEmail: string
+  planId: string
   // When given, the form edits this activity instead of creating a new one.
   activity?: Activity
   onSaved: (activity: Activity) => void
@@ -12,7 +12,7 @@ type ActivityFormProps = {
 }
 
 // Shown in the atlas as a sheet being filled in.
-export function ActivityForm({ ownerEmail, activity, onSaved, onCancel }: ActivityFormProps) {
+export function ActivityForm({ planId, activity, onSaved, onCancel }: ActivityFormProps) {
   const [values, setValues] = useState<NewActivityValues>({
     title: activity?.title ?? '',
     subject: activity?.subject ?? '',
@@ -39,7 +39,7 @@ export function ActivityForm({ ownerEmail, activity, onSaved, onCancel }: Activi
 
     setSubmitting(true)
     try {
-      onSaved(activity ? await updateActivity(activity.id, values) : await createActivity({ ...values, ownerEmail }))
+      onSaved(activity ? await updateActivity(activity.id, values) : await createActivity(planId, values))
     } catch {
       setErrors({ form: 'Could not save the activity. Please try again.' })
       setSubmitting(false)

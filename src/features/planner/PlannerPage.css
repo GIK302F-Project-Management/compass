@@ -1,0 +1,27 @@
+.planner-page {
+  width: calc(100% - 32px);
+  max-width: 760px;
+  box-sizing: border-box;
+  margin: 2rem auto 4rem;
+}
+.planner-modes {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 2rem;
+}
+.planner-modes a {
+  padding: 8px 14px;
+  border: 1.5px solid var(--ink);
+  font: 500 12px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+}
+.planner-modes a:hover {
+  background: var(--accent-bg);
+}
+.planner-modes a[aria-current='page'] {
+  background: var(--ink);
+  color: var(--paper);
+}

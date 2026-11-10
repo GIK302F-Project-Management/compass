@@ -1,9 +1,0 @@
-.plan-page {
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-  width: calc(100% - 32px);
-  max-width: 760px;
-  box-sizing: border-box;
-  margin: 2.5rem auto 4rem;
-}

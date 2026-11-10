@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { deleteActivity, listActivities, type Activity } from './api/activities'
-import { useSession } from '@/shared/session/useSession'
+import { useActivePlan } from '@/shared/plans/useCurrentPlan'
 import { ActivityForm } from './ActivityForm'
+import { LegacyImportBanner } from './LegacyImportBanner'
 import { PencilIcon, TrashIcon } from '@/shared/ui/Icons'
 import { SheetMap } from './SheetMap'
 import { formatDueDate, parseDueDate } from '@/shared/utils/dates'
@@ -29,20 +30,28 @@ function matchesSearch(activity: Activity, query: string): boolean {
 }
 
 // The student's activities as an atlas of map sheets: search, add, edit and delete.
+// Shows the activities of the plan the student works in, so give it a `key` of the plan id to start fresh on a switch.
 export function Atlas() {
-  const session = useSession()
-  const ownerEmail = session?.email ?? ''
+  const plan = useActivePlan()
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
+  const [problem, setProblem] = useState<string | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [query, setQuery] = useState('')
 
   useEffect(() => {
-    listActivities(ownerEmail)
+    listActivities(plan.id)
       .then(setActivities)
+      .catch(() => setProblem('Could not load the activities. Refresh the page to try again.'))
       .finally(() => setLoading(false))
-  }, [ownerEmail])
+  }, [plan.id])
+
+  function reload() {
+    listActivities(plan.id)
+      .then(setActivities)
+      .catch(() => setProblem('Could not load the activities. Refresh the page to try again.'))
+  }
 
   function openNewForm() {
     setEditingId(null)
@@ -66,8 +75,13 @@ export function Atlas() {
 
   async function handleDelete(activity: Activity) {
     if (!window.confirm(`Delete "${activity.title}"?`)) return
-    await deleteActivity(activity.id)
-    setActivities(activities.filter((item) => item.id !== activity.id))
+    try {
+      await deleteActivity(activity.id)
+      setActivities(activities.filter((item) => item.id !== activity.id))
+      setProblem(null)
+    } catch {
+      setProblem(`Could not delete "${activity.title}". Please try again.`)
+    }
   }
 
   // The sheet numbers stay the same while searching, so "Sheet 03" is always the same activity.
@@ -91,13 +105,15 @@ export function Atlas() {
       </form>
 
       <div className="atlas">
+        <LegacyImportBanner planId={plan.id} planName={plan.name} onImported={reload} />
         <p className="kicker atlas-count">
-          This semester ·{' '}
+          {plan.name} ·{' '}
           {searching
             ? `${visible.length} of ${activities.length} ${activities.length === 1 ? 'sheet' : 'sheets'}`
             : `${activities.length} ${activities.length === 1 ? 'sheet' : 'sheets'}`}
         </p>
         {loading && <p role="status">Loading your activities...</p>}
+        {problem && <p role="alert">{problem}</p>}
         {!loading && activities.length === 0 && !formOpen && (
           <p className="atlas-empty">No activities yet. Add your first one to start mapping your semester.</p>
         )}
@@ -109,7 +125,7 @@ export function Atlas() {
             return (
               <ActivityForm
                 key={activity.id}
-                ownerEmail={ownerEmail}
+                planId={plan.id}
                 activity={activity}
                 onSaved={handleUpdated}
                 onCancel={() => setEditingId(null)}
@@ -157,7 +173,7 @@ export function Atlas() {
           )
         })}
         {formOpen ? (
-          <ActivityForm ownerEmail={ownerEmail} onSaved={handleCreated} onCancel={() => setFormOpen(false)} />
+          <ActivityForm planId={plan.id} onSaved={handleCreated} onCancel={() => setFormOpen(false)} />
         ) : (
           <button className="sheet sheet-blank" onClick={openNewForm}>
             + New activity

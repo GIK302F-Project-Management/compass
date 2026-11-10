@@ -10,9 +10,9 @@ type NavItem = {
 
 const ITEMS: NavItem[] = [
   { to: '/home', label: 'Atlas', alsoUnder: '/activity' },
+  { to: '/plans', label: 'Shared plans', alsoUnder: '/plans' },
   { to: '/goals', label: 'Goals' },
-  { to: '/plan', label: 'Quick plan' },
-  { to: '/route', label: 'AI route' },
+  { to: '/planner', label: 'Planner' },
 ]
 
 function isCurrent(item: NavItem, pathname: string): boolean {
