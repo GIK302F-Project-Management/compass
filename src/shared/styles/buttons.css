@@ -1,0 +1,81 @@
+/* Buttons and links that look like them. The modifiers come after the base rule on purpose. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 16px/1.2 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+.button:hover {
+  background: var(--accent-bg);
+}
+.button-primary {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 4px 4px 0 var(--accent);
+}
+.button-primary:hover {
+  background: var(--ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 var(--accent);
+}
+.button-primary:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--accent);
+}
+.button-small {
+  padding: 8px 14px;
+  font-size: 15px;
+}
+.button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+  transform: none;
+}
+
+.text-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+.text-link:hover {
+  color: var(--accent);
+}
+
+/* A text link that is really a button */
+.button-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.button-danger:hover {
+  border-color: var(--error);
+  background: transparent;
+  color: var(--error);
+}
+.button-icon {
+  padding: 8px;
+}
+.button-route {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.button-route::before {
+  content: "✦";
+  font-size: 0.85em;
+}

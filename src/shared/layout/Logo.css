@@ -1,0 +1,31 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.logo-rose {
+  width: 30px;
+  height: 30px;
+}
+.logo-rose .rose-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+.logo-rose .rose-star {
+  fill: currentColor;
+}
+.logo-rose .rose-needle {
+  fill: var(--accent);
+}
+.logo:hover .rose-group {
+  transform: rotate(-12deg);
+}
+.logo-name {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}

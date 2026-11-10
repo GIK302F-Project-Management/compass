@@ -16,6 +16,9 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* "@/..." means "src/..." (Vite and Vitest read this setting too) */
+    "paths": { "@/*": ["./src/*"] },
+
     /* Linting */
     "strict": true,
     "noUncheckedIndexedAccess": true,

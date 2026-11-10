@@ -1,0 +1,162 @@
+/* Result: the route, one waypoint per study day */
+.plan-result-body {
+  gap: 28px;
+  padding-bottom: 24px;
+}
+.plan-result-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plan-result-intro h2 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -0.02em;
+}
+.plan-result-intro h2:focus {
+  outline: none;
+}
+.plan-result-intro h2:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.plan-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-bg);
+  color: var(--ink);
+}
+.plan-notice-title {
+  font-weight: 600;
+}
+.plan-notice ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.plan-subtitle {
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.plan-coverage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.plan-coverage-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+.plan-coverage-title {
+  font-weight: 500;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.plan-coverage-amount {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.plan-days {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.plan-day {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  column-gap: 20px;
+  padding-bottom: 28px;
+}
+.plan-day::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 30px;
+  bottom: 4px;
+  border-left: 2px dashed var(--line);
+}
+.plan-day:last-child {
+  padding-bottom: 0;
+}
+.plan-day:last-child::before {
+  display: none;
+}
+.plan-day-marker {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  margin-top: 2px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+}
+.plan-day-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.plan-day-header h4 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.plan-day-relative {
+  color: var(--accent);
+}
+.plan-day-total {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+.plan-sessions {
+  grid-column: 2;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.plan-session {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+.plan-session-title {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.plan-session-time {
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 560px) {
+  .plan-day {
+    column-gap: 14px;
+  }
+}

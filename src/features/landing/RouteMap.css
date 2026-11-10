@@ -1,0 +1,52 @@
+.route-map {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.waypoint-done {
+  fill: var(--ink);
+}
+.waypoint-pulse {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 2.4s ease-out infinite;
+}
+.map-date {
+  font-weight: 400;
+  fill: var(--ink-soft);
+}
+.map-rose .rose-ring {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+.map-rose .rose-star {
+  fill: var(--ink);
+}
+.map-rose .rose-needle {
+  fill: var(--accent);
+}
+.map-scale {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .waypoint-pulse {
+    animation: none;
+    opacity: 0;
+  }
+}

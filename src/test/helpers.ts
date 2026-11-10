@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import type { Session } from '../api/session'
+import type { Session } from '@/shared/session/session'
 
 /** A session that is valid for another hour. */
 export function makeSession(overrides: Partial<Session> = {}): Session {

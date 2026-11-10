@@ -1,0 +1,35 @@
+/* Move through the app: the section the student is in is underlined */
+.main-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0 clamp(16px, 4vw, 48px);
+  border-bottom: 1.5px solid var(--ink);
+  background: var(--paper-2);
+}
+.main-nav a {
+  margin-bottom: -1.5px;
+  padding: 12px 14px 10px;
+  border-bottom: 3px solid transparent;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-soft);
+}
+.main-nav a:hover {
+  background: var(--accent-bg);
+  color: var(--ink);
+}
+.main-nav a[aria-current='page'] {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .main-nav a {
+    padding-inline: 10px;
+  }
+}

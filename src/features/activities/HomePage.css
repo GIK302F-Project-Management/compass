@@ -1,0 +1,72 @@
+.search-form {
+  display: flex;
+  gap: 8px;
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  margin: 2.5rem auto 0;
+}
+.search-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Activities shown as an atlas: one map sheet per activity, in no fixed order */
+.atlas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-items: stretch;
+  gap: 28px 24px;
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  box-sizing: border-box;
+  margin: 2rem auto 3rem;
+  padding: 0;
+}
+.atlas-count,
+.atlas-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.atlas-count {
+  margin-bottom: -12px;
+}
+.sheet.due-soon {
+  box-shadow: 6px 6px 0 var(--accent);
+}
+.sheet.done {
+  opacity: 0.65;
+}
+.sheet-due {
+  margin: 0;
+  font-size: 15px;
+}
+/* home page layout: atlas on the left, route trail on the right (wide screens only) */
+.home-layout {
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.home-layout .search-form,
+.home-layout .atlas,
+.home-layout .today-card {
+  width: 100%;
+  max-width: none;
+}
+.route-trail {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .home-layout.with-trail {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+    gap: 40px;
+    max-width: 1440px;
+  }
+  .with-trail .today-card {
+    display: none;
+  }
+  .with-trail .route-trail {
+    display: flex;
+  }
+}

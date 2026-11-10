@@ -1,0 +1,60 @@
+/* Text controls: every input, textarea and the search box share one look */
+.form-field input,
+.form-field textarea,
+.search-input {
+  padding: 12px 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px var(--sans);
+  transition: box-shadow 0.12s ease;
+}
+.form-field input:focus,
+.form-field textarea:focus,
+.search-input:focus {
+  outline: none;
+  box-shadow: 4px 4px 0 var(--accent);
+}
+
+/* A labelled field (FormField, TextAreaField) */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-field label {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.form-field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+.form-field input[aria-invalid='true'],
+.form-field textarea[aria-invalid='true'] {
+  border-color: var(--error);
+}
+.field-hint {
+  font-size: 14px;
+}
+.field-error,
+.form-error {
+  font-size: 14px;
+  color: var(--error);
+}
+.field-error::before {
+  content: '↳ ';
+}
+.form-notice {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent);
+  background: var(--paper-2);
+  font-size: 14px;
+  color: var(--ink);
+}
