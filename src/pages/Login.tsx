@@ -1,16 +1,17 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { loginUser } from '../api/auth'
 import { saveSession } from '../api/session'
 import { ContourBackground } from '../components/ContourBackground'
 import { FormField } from '../components/FormField'
+import type { LoginRedirectState } from '../components/RouteGuards'
 import { TopBar } from '../components/TopBar'
 import { validateLogin, type LoginErrors, type LoginValues } from '../validation/login'
 
 const EMPTY_VALUES: LoginValues = { email: '', password: '' }
 
 export function Login() {
-  const navigate = useNavigate()
+  const sessionExpired = (useLocation().state as LoginRedirectState | null)?.expired === true
   const [values, setValues] = useState<LoginValues>(EMPTY_VALUES)
   const [errors, setErrors] = useState<LoginErrors>({})
   const [submitting, setSubmitting] = useState(false)
@@ -34,10 +35,12 @@ export function Login() {
     try {
       const result = await loginUser(values)
       if (result.ok) {
+        // Saving the session is all it takes: GuestOnly sees it and moves the student to the page they wanted.
         saveSession(result.session)
-        navigate('/home')
       } else {
-        setErrors({ form: 'Email or password is incorrect.' })
+        // One message for both cases, like the backend, so it never reveals which emails have an account.
+        setValues({ ...values, password: '' })
+        setErrors({ form: 'Incorrect email or password.' })
       }
     } catch {
       setErrors({ form: 'Could not reach the server. Please try again.' })
@@ -67,6 +70,11 @@ export function Login() {
         <div className="auth-main">
           <form className="auth-card" onSubmit={handleSubmit} noValidate>
             <h1>Log in</h1>
+            {sessionExpired && (
+              <p className="form-notice" role="status">
+                Your session has ended. Log in again to continue.
+              </p>
+            )}
             <FormField
               id="email"
               label="University email"

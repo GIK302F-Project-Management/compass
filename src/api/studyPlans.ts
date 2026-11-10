@@ -1,4 +1,4 @@
-import { authFetch, UnauthorizedError } from './http'
+import { apiFetch, UnauthorizedError } from './http'
 
 // Shapes of POST /api/study-plans on compass-backend.
 
@@ -70,19 +70,23 @@ function messageFor(status: number) {
 export async function generateStudyPlan(request: StudyPlanRequest, signal?: AbortSignal): Promise<StudyPlanResponse> {
   let response: Response
   try {
-    response = await authFetch('/api/study-plans', {
+    response = await apiFetch('/api/study-plans', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(request),
       signal,
     })
   } catch (error) {
-    if (error instanceof UnauthorizedError || (error instanceof DOMException && error.name === 'AbortError')) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
       throw error
     }
     throw new StudyPlanError('Could not reach the server. Is compass-backend running?')
   }
 
+  // apiFetch has already ended the session; the caller only needs to know why the request failed.
+  if (response.status === 401) {
+    throw new UnauthorizedError()
+  }
   if (!response.ok) {
     throw new StudyPlanError(messageFor(response.status))
   }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { deleteActivity, listActivities, type Activity } from '../api/activities'
-import { getSession } from '../api/session'
+import { useSession } from '../hooks/useSession'
 import { ActivityForm } from '../components/ActivityForm'
 import { RouteTrail } from '../components/RouteTrail'
 import { TodayCard } from '../components/TodayCard'
@@ -26,7 +26,7 @@ function dueBadge(activity: Activity) {
 }
 
 export function Home(){
-    const [session] = useState(getSession)
+    const session = useSession()
     const ownerEmail = session?.email ?? ''
     const [activities, setActivities] = useState<Activity[]>([])
     const [loading, setLoading] = useState(true)
@@ -70,12 +70,17 @@ export function Home(){
     return <>
     <TopBar
         title="Your atlas"
-        actions={<>
-            <Link to="/route" className="button button-small button-route">
-                {route ? 'My route' : 'Plot my route'}
-            </Link>
-            <UserMenu />
-        </>}
+        actions={
+            <>
+                <Link to="/route" className="button button-small button-route">
+                    {route ? 'My route' : 'Plot my route'}
+                </Link>
+                <Link to="/plan" className="button button-small">
+                    Study plan
+                </Link>
+                <UserMenu />
+            </>
+        }
     />
     <div className={route ? 'home-layout with-trail' : 'home-layout'}>
     <div className="home-main">

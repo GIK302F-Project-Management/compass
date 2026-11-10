@@ -1,28 +1,25 @@
-import { clearSession, getSession } from './session'
+import { API_URL } from './config'
+import { endSession, getSession } from './session'
 
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
-
-// Thrown when the backend rejects the token (missing, expired or for a deleted account).
+// Thrown to tell callers the backend refused the access token (apiFetch has already ended the session).
 export class UnauthorizedError extends Error {
   constructor() {
     super('Your session has expired. Please log in again.')
   }
 }
 
-// fetch for protected endpoints: adds the access token and drops the session on 401.
-export async function authFetch(path: string, init: RequestInit = {}): Promise<Response> {
+// fetch for the endpoints that need a login: adds the access token and handles a refused one.
+export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const session = getSession()
-  if (!session) {
-    throw new UnauthorizedError()
-  }
-
   const headers = new Headers(init.headers)
-  headers.set('Authorization', `Bearer ${session.token}`)
+  if (session) headers.set('Authorization', `Bearer ${session.token}`)
 
   const response = await fetch(`${API_URL}${path}`, { ...init, headers })
-  if (response.status === 401) {
-    clearSession()
-    throw new UnauthorizedError()
+
+  // The backend no longer accepts this token (it expired, or the server was restarted with a new key).
+  // Ending the session sends the student to the login page. A newer login is left alone.
+  if (response.status === 401 && session && getSession()?.token === session.token) {
+    endSession('expired')
   }
   return response
 }
