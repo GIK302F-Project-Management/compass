@@ -99,6 +99,7 @@ export function Home(){
             }
             const badge = dueBadge(activity)
             const urgent = badge === 'Due soon' || badge === 'Overdue'
+            const isShared = activity.shared || (activity.collaborators?.length ?? 0) > 0
             return (
                 <article
                     key={activity.id}
@@ -109,7 +110,10 @@ export function Home(){
                             Sheet {String(index + 1).padStart(2, '0')}
                             {activity.subject && ` · ${activity.subject}`}
                         </span>
-                        {badge && <span className="sheet-badge">{badge}</span>}
+                        <span className="sheet-header-group">
+                            {isShared && <span className="sheet-badge">Shared</span>}
+                            {badge && <span className="sheet-badge">{badge}</span>}
+                        </span>
                     </header>
                     <SheetMap seed={activity.id} />
                     <div className="sheet-body">
