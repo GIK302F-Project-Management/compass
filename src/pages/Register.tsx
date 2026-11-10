@@ -40,10 +40,11 @@ export function Register() {
       const result = await registerUser({ name: values.name, email: values.email, password: values.password })
       if (result.ok) {
         setRegistered(true)
-      } else if (result.error === 'email-taken') {
-        setErrors({ email: 'An account with this email already exists. Try logging in instead.' })
       } else {
-        setErrors({ email: `Use your university email (name@${UNIVERSITY_EMAIL_DOMAIN}).` })
+        const fieldErrors = result.errors
+        setErrors(Object.keys(fieldErrors).length > 0
+          ? fieldErrors
+          : { email: `Use your university email (name@${UNIVERSITY_EMAIL_DOMAIN}).` })
       }
     } catch {
       setErrors({ form: 'Something went wrong while creating your account. Please try again.' })

@@ -1,16 +1,23 @@
-// Logged-in user kept in localStorage. The backend has no tokens yet, so this
-// only remembers who logged in; it does not protect any route.
+// Logged-in user kept in localStorage, with the access token from compass-backend.
+// The token is sent as "Authorization: Bearer <token>" on protected endpoints (see api/http.ts).
 
 export type Session = {
   name: string
   email: string
+  token: string
+  expiresAt: string // ISO instant from the backend
 }
 
 const STORAGE_KEY = 'compass.session'
 
+// Returns null when nobody is logged in, or when the stored token has already expired.
 export function getSession(): Session | null {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')
+    const session: Session | null = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null')
+    if (!session?.token || Date.parse(session.expiresAt) <= Date.now()) {
+      return null
+    }
+    return session
   } catch {
     return null
   }

@@ -6,10 +6,11 @@ export type MockTask = {
   title: string
   details: string
   dueDate: string // YYYY-MM-DD, or '' when the task has no deadline
+  estimatedMinutes?: number | null // how long the task should take; used by the route planner
   done: boolean
 }
 
-export type MockTaskChanges = Partial<Pick<MockTask, 'title' | 'details' | 'dueDate' | 'done'>>
+export type MockTaskChanges = Partial<Pick<MockTask, 'title' | 'details' | 'dueDate' | 'estimatedMinutes' | 'done'>>
 
 const STORAGE_KEY = 'compass.mockTasks'
 
@@ -29,13 +30,20 @@ export function findMockTasksByActivity(activityId: string) {
   return loadTasks().filter((task) => task.activityId === activityId)
 }
 
-export function createMockTask(activityId: string, title: string, details: string, dueDate: string) {
+export function createMockTask(
+  activityId: string,
+  title: string,
+  details: string,
+  dueDate: string,
+  estimatedMinutes: number | null,
+) {
   const task: MockTask = {
     id: crypto.randomUUID(),
     activityId,
     title,
     details,
     dueDate,
+    estimatedMinutes,
     done: false,
   }
   saveTasks([...loadTasks(), task])
