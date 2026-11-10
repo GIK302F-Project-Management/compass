@@ -6,7 +6,6 @@ import { ContourBackground } from '../components/ContourBackground'
 import { FormField } from '../components/FormField'
 import { TopBar } from '../components/TopBar'
 import { validateLogin, type LoginErrors, type LoginValues } from '../validation/login'
-import { normalizeEmail } from '../validation/register'
 
 const EMPTY_VALUES: LoginValues = { email: '', password: '' }
 
@@ -35,12 +34,10 @@ export function Login() {
     try {
       const result = await loginUser(values)
       if (result.ok) {
-        saveSession({ name: result.name, email: normalizeEmail(values.email) })
+        saveSession(result.session)
         navigate('/home')
-      } else if (result.error === 'not-found') {
-        setErrors({ email: 'There is no account with this email. Create one first.' })
       } else {
-        setErrors({ password: 'Incorrect password.' })
+        setErrors({ form: 'Email or password is incorrect.' })
       }
     } catch {
       setErrors({ form: 'Could not reach the server. Please try again.' })

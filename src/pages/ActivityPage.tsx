@@ -5,7 +5,7 @@ import { deleteTask, listTasks, updateTask, type Task } from '../api/tasks'
 import { PencilIcon, TrashIcon } from '../components/Icons'
 import { TaskForm } from '../components/TaskForm'
 import { TopBar } from '../components/TopBar'
-import { formatDueDate } from '../utils/dates'
+import { formatDueDate, formatMinutes } from '../utils/dates'
 
 export function Activity(){
     const { id = '' } = useParams()
@@ -81,6 +81,11 @@ export function Activity(){
                 {activity.subject ? `${activity.subject} · ` : ''}Due {formatDueDate(activity.dueDate)}
             </p>
             <h2>{activity.title}</h2>
+            {!activity.done && (
+                <Link to={`/route?activity=${activity.id}`} className="button button-small button-route activity-plan">
+                    Plan this activity with AI
+                </Link>
+            )}
             {tasks.length > 0 ? (
                 <>
                 <p className="activity-progress">
@@ -124,6 +129,7 @@ export function Activity(){
                             <span className="kicker">
                                 Task {String(index + 1).padStart(2, '0')}
                                 {task.dueDate && ` · Due ${formatDueDate(task.dueDate)}`}
+                                {task.estimatedMinutes ? ` · ~${formatMinutes(task.estimatedMinutes)}` : ''}
                             </span>
                             <span className="task-title">{task.title}</span>
                         </label>
