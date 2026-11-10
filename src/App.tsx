@@ -6,6 +6,7 @@ import { Login } from './pages/Login';
 import { Home } from './pages/Home';
 import { Activity } from './pages/ActivityPage';
 import { NotFound } from './pages/NotFound';
+import { GoalsPage } from './pages/GoalsPage'
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/activity/:id" element={<Activity />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/goals" element={<GoalsPage />} />
         </Routes>
 }
 

@@ -64,9 +64,17 @@ export function Home(){
 
     return <>
     <TopBar
-        title="Your atlas"
-        actions={<UserMenu />}
-    />
+  actions={
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <Link to="/goals" className="button button-small" style={{ textDecoration: 'none' }}>
+        Learning Goals
+      </Link>
+      <Link to="/login" className="button button-small">
+        Log in
+      </Link>
+    </div>
+  }
+/>
     <form id="search-form">
     <input
         type="search"
