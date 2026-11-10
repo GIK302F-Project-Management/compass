@@ -3,11 +3,11 @@ import { formatMinutes, hoursToMinutes, parseHours } from './duration'
 
 describe('formatMinutes', () => {
   it.each([
-    [45, '45 min'],
-    [60, '1 h'],
-    [90, '1 h 30 min'],
-    [120, '2 h'],
-    [0, '0 min'],
+    [45, '45m'],
+    [60, '1h'],
+    [90, '1h 30m'],
+    [120, '2h'],
+    [0, '0m'],
   ])('%i minutes -> %s', (minutes, text) => {
     expect(formatMinutes(minutes)).toBe(text)
   })

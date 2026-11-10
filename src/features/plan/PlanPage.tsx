@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { listActivities } from '@/features/activities/api/activities'
 import { clearLastPlan, loadLastPlan, saveLastPlan, type SavedPlan } from './api/lastPlan'
-import { generateStudyPlan, type PlanFailure } from './api/studyPlan'
+import { generateStudyPlan, type PlanFailure } from '@/shared/api/studyPlans'
 import { useSession } from '@/shared/session/useSession'
 import { AppHeader } from '@/shared/layout/AppHeader'
 import { PlanForm } from './PlanForm'
@@ -17,7 +17,7 @@ import {
   validatePlan,
   type PlanErrors,
   type PlanValues,
-} from './validation/studyPlan'
+} from './validation/plan'
 import './PlanPage.css'
 
 const NO_ERRORS: PlanErrors = { goalErrors: {} }

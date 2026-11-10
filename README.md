@@ -59,14 +59,15 @@ src/
 ├── app/                # The shell that wires the features together: routes (App), error boundary, 404 page, design tokens
 ├── features/
 │   ├── auth/           # Login, register, route guards (RequireAuth, GuestOnly)
-│   ├── activities/     # The atlas (HomePage), an activity and its tasks (ActivityPage)
+│   ├── activities/     # The atlas of activities (Atlas), an activity and its tasks (ActivityPage)
+│   ├── home/           # The page after login: the atlas plus the route card/trail. Built from activities and route
 │   ├── goals/          # Learning goals
-│   ├── plan/           # AI study plan: form, result and the last saved plan
-│   ├── route/          # AI route planner (/route) and the route widgets shown on the home page
+│   ├── plan/           # Quick plan (/plan): type goals and hours by hand, get a daily plan
+│   ├── route/          # AI route (/route): plan the tasks of your activities, plus the route widgets of the home page
 │   └── landing/        # Public landing page
 │   Each feature has: *Page.tsx and components with their .css, api/ (server calls), validation/ (form rules)
 ├── shared/             # Used by several features. Never imports from features/ or app/ (enforced by ESLint)
-│   ├── api/            # fetch wrapper that adds the token, API address
+│   ├── api/            # fetch wrapper that adds the token, API address, the study-plans endpoint both planners use
 │   ├── hooks/          # useFormState, useDocumentTitle
 │   ├── layout/         # Header, navigation, skip link, logos: what every page is wrapped in
 │   ├── session/        # The login session kept in localStorage, and useSession
@@ -79,6 +80,8 @@ src/
 Rules that keep this tidy:
 
 - Dependencies point one way: `app` -> `features` -> `shared`. ESLint fails the build if `shared` imports a feature, or a feature imports `app`.
+- Between features there is one chain, `home` -> `route` -> `activities`, also enforced by ESLint. Code that needs two features at once goes in `home` (or `app`), never in a cycle.
+- One definition per thing: `POST /api/study-plans` is called by `generateStudyPlan` in `shared/api/studyPlans.ts` (both planners use it), and durations are formatted by `formatMinutes` in `shared/utils/duration.ts` ("2h 15m").
 - Inside a feature use relative imports. Across folders use the `@/` alias, which means `src/` (for example `@/shared/ui/FormField`).
 - Tests sit next to the code as `*.test.ts[x]`. Each component has its stylesheet next to it, with the same name.
 - Activities and tasks are kept in `localStorage` (`features/activities/api/activityStore.ts` and `taskStore.ts`) until the backend has endpoints for them.

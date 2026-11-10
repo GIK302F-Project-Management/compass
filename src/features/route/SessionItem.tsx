@@ -1,6 +1,6 @@
 import { sessionLabel } from './api/routeProgress'
-import { sessionAt, type SavedRoute } from './api/studyPlans'
-import { formatMinutes } from '@/shared/utils/dates'
+import { sessionAt, type SavedRoute } from './api/savedRoute'
+import { formatMinutes } from '@/shared/utils/duration'
 import './SessionItem.css'
 
 type SessionItemProps = {

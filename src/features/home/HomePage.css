@@ -1,0 +1,30 @@
+/* home page layout: atlas on the left, route trail on the right (wide screens only) */
+.home-layout {
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.home-layout .search-form,
+.home-layout .atlas,
+.home-layout .today-card {
+  width: 100%;
+  max-width: none;
+}
+.route-trail {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .home-layout.with-trail {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+    gap: 40px;
+    max-width: 1440px;
+  }
+  .with-trail .today-card {
+    display: none;
+  }
+  .with-trail .route-trail {
+    display: flex;
+  }
+}

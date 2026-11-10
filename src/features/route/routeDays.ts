@@ -1,4 +1,4 @@
-import { sessionAt, type SavedRoute } from './api/studyPlans'
+import { sessionAt, type SavedRoute } from './api/savedRoute'
 
 // The route seen day by day, relative to today. Shared by the home page trail and card.
 

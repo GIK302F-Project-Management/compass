@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 import type { SavedPlan } from './api/lastPlan'
-import type { PlanSession } from './api/studyPlan'
+import type { StudySession } from '@/shared/api/studyPlans'
 import { daysBetween, formatDueDate, toIsoDate } from '@/shared/utils/dates'
 import { formatMinutes } from '@/shared/utils/duration'
 import './PlanResult.css'
@@ -10,10 +10,10 @@ type PlanResultProps = {
   headingRef: RefObject<HTMLHeadingElement | null>
 }
 
-type Day = { date: string; sessions: PlanSession[]; minutes: number }
+type Day = { date: string; sessions: StudySession[]; minutes: number }
 
 // Sessions of the same date go under one heading, in calendar order.
-function groupByDay(sessions: PlanSession[]): Day[] {
+function groupByDay(sessions: StudySession[]): Day[] {
   const days = new Map<string, Day>()
   for (const session of [...sessions].sort((a, b) => a.date.localeCompare(b.date))) {
     const day = days.get(session.date) ?? { date: session.date, sessions: [], minutes: 0 }

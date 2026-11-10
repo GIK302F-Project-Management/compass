@@ -1,4 +1,4 @@
-import type { PlanRequest } from '../api/studyPlan'
+import type { StudyPlanRequest } from '@/shared/api/studyPlans'
 import { addDays, daysBetween, toIsoDate } from '@/shared/utils/dates'
 import { hoursToMinutes, parseHours } from '@/shared/utils/duration'
 
@@ -111,7 +111,7 @@ export function hasPlanErrors(errors: PlanErrors) {
 }
 
 // Only call this with values that passed validatePlan.
-export function toPlanRequest(values: PlanValues): PlanRequest {
+export function toPlanRequest(values: PlanValues): StudyPlanRequest {
   return {
     startDate: values.startDate,
     dailyAvailableMinutes: hoursToMinutes(parseHours(values.dailyHours) ?? 0),

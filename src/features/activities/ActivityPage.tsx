@@ -6,7 +6,8 @@ import { AppHeader } from '@/shared/layout/AppHeader'
 import { PencilIcon, TrashIcon } from '@/shared/ui/Icons'
 import { TaskForm } from './TaskForm'
 import { Main } from '@/shared/layout/Main'
-import { formatDueDate, formatMinutes } from '@/shared/utils/dates'
+import { formatDueDate } from '@/shared/utils/dates'
+import { formatMinutes } from '@/shared/utils/duration'
 import './ActivityPage.css'
 
 export function ActivityPage() {

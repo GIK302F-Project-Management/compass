@@ -1,5 +1,5 @@
-import type { SavedRoute, StudySession } from './studyPlans'
-import { saveRoute, sessionAt } from './studyPlans'
+import type { StudySession } from '@/shared/api/studyPlans'
+import { saveRoute, sessionAt, type SavedRoute } from './savedRoute'
 import { updateTask, type Task } from '@/features/activities/api/tasks'
 
 // Shared by the route page and the "Today on your route" card on the home page.

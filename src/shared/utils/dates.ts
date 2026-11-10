@@ -29,11 +29,3 @@ export function daysBetween(from: string, to: string) {
 export function todayIso() {
   return toIsoDate(new Date())
 }
-
-// 45 -> "45m", 120 -> "2h", 135 -> "2h 15m"
-export function formatMinutes(minutes: number) {
-  const hours = Math.floor(minutes / 60)
-  const rest = minutes % 60
-  if (hours === 0) return `${rest}m`
-  return rest === 0 ? `${hours}h` : `${hours}h ${rest}m`
-}

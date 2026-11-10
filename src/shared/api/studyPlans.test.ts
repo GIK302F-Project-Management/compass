@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { jsonResponse, makeSession, stubFetch } from '@/test/helpers'
 import { saveSession } from '@/shared/session/session'
-import { generateStudyPlan, type PlanRequest } from './studyPlan'
+import { generateStudyPlan, type StudyPlanRequest } from './studyPlans'
 
-const REQUEST: PlanRequest = {
+const REQUEST: StudyPlanRequest = {
   startDate: '2026-11-03',
   dailyAvailableMinutes: 60,
   goals: [{ id: 'g1', title: 'Learn Java', deadline: '2026-11-10', estimatedMinutes: 120 }],

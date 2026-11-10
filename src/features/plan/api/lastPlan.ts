@@ -1,13 +1,13 @@
 // The last plan the student generated, kept in localStorage so a refresh does not throw it away
 // (the backend does not store plans, and the AI planner can take a while to answer).
 // It is saved per account, so two students sharing a browser never see each other's plan.
-import type { PlanRequest, StudyPlan } from './studyPlan'
-import type { PlanValues } from '../validation/studyPlan'
+import type { StudyPlanRequest, StudyPlanResponse } from '@/shared/api/studyPlans'
+import type { PlanValues } from '../validation/plan'
 
 export type SavedPlan = {
   values: PlanValues // what was typed in the form
-  request: PlanRequest // what was sent to the backend
-  plan: StudyPlan
+  request: StudyPlanRequest // what was sent to the backend
+  plan: StudyPlanResponse
   generatedAt: string // ISO timestamp
 }
 

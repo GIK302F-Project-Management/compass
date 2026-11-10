@@ -1,27 +1,23 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { listActivities, type Activity } from '@/features/activities/api/activities'
-import { UnauthorizedError } from '@/shared/api/http'
-import { getSession } from '@/shared/session/session'
 import {
   generateStudyPlan,
-  loadRoute,
-  parseWarning,
-  saveRoute,
-  StudyPlanError,
-  type GoalInfo,
-  type SavedRoute,
+  type PlanFailure,
   type StudyGoal,
   type StudyPlanRequest,
   type StudySession,
-} from './api/studyPlans'
+} from '@/shared/api/studyPlans'
+import { getSession } from '@/shared/session/session'
+import { loadRoute, parseWarning, saveRoute, type GoalInfo, type SavedRoute } from './api/savedRoute'
 import { isSessionDone, toggleSession } from './api/routeProgress'
 import { listTasks, updateTask, type Task } from '@/features/activities/api/tasks'
 import { ContourHill } from '@/shared/ui/MapShapes'
 import { SessionItem } from './SessionItem'
 import { AppHeader } from '@/shared/layout/AppHeader'
 import { Main } from '@/shared/layout/Main'
-import { daysBetween, formatDueDate, formatMinutes, todayIso } from '@/shared/utils/dates'
+import { daysBetween, formatDueDate, todayIso } from '@/shared/utils/dates'
+import { formatMinutes } from '@/shared/utils/duration'
 import { estimateToHours, MAX_ESTIMATE_HOURS, parseEstimate } from '@/features/activities/validation/task'
 import './RoutePlannerPage.css'
 
@@ -45,6 +41,15 @@ const PREFERENCE_PRESETS = [
   'Keep sessions under 1 hour.',
   'Leave the day before each deadline for review.',
 ]
+
+// Why the planner said no, in the words of this page.
+const FAILURE_MESSAGES: Record<Exclude<PlanFailure, 'session-expired'>, string> = {
+  invalid: 'The route could not be planned with these details. Check the dates and hours and try again.',
+  'ai-failed': 'The AI could not generate a route this time. Please try again.',
+  busy: 'The AI route planner is busy or out of quota right now. Try again in a few minutes.',
+  timeout: 'The AI took too long to answer. Try again, or plan fewer activities at once.',
+}
+const UNREACHABLE_MESSAGE = 'Could not reach the server. Is compass-backend running?'
 
 type Phase = 'briefing' | 'plotting' | 'itinerary'
 
@@ -251,8 +256,18 @@ export function RoutePlannerPage() {
     setPlotting({ goals: request.goals.length, dailyMinutes: request.dailyAvailableMinutes })
     setPhase('plotting')
     try {
-      const response = await generateStudyPlan(request, controller.signal)
-      const saved: SavedRoute = { ...response, request, goals, checked: [], createdAt: new Date().toISOString() }
+      const result = await generateStudyPlan(request, controller.signal)
+      if (!result.ok) {
+        // The session is already over (the request ended it), so the page just says why it cannot go on.
+        if (result.error === 'session-expired') {
+          setExpired(true)
+          return
+        }
+        setError(FAILURE_MESSAGES[result.error])
+        setPhase('briefing')
+        return
+      }
+      const saved: SavedRoute = { ...result.plan, request, goals, checked: [], createdAt: new Date().toISOString() }
       saveRoute(ownerEmail, saved)
       setRoute(saved)
       setPhase('itinerary')
@@ -261,11 +276,7 @@ export function RoutePlannerPage() {
         setPhase(route ? 'itinerary' : 'briefing')
         return
       }
-      if (caught instanceof UnauthorizedError) {
-        setExpired(true)
-        return
-      }
-      setError(caught instanceof StudyPlanError ? caught.message : 'Something went wrong while plotting the route.')
+      setError(UNREACHABLE_MESSAGE)
       setPhase('briefing')
     }
   }

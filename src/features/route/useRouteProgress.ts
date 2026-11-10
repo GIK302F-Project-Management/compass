@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { isSessionDone, toggleSession } from './api/routeProgress'
-import { loadRoute } from './api/studyPlans'
+import { loadRoute } from './api/savedRoute'
 import { listTasks, type Task } from '@/features/activities/api/tasks'
 
 // The saved route plus the tasks it schedules, for pages that show the route's progress

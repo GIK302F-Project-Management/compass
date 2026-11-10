@@ -10,7 +10,7 @@ import {
   type GoalValues,
   type PlanErrors,
   type PlanValues,
-} from './validation/studyPlan'
+} from './validation/plan'
 import './PlanForm.css'
 
 type PlanFormProps = {

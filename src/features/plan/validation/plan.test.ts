@@ -7,7 +7,7 @@ import {
   validatePlan,
   type GoalValues,
   type PlanValues,
-} from './studyPlan'
+} from './plan'
 
 const goal = (overrides: Partial<GoalValues> = {}): GoalValues => ({
   id: 'g1',

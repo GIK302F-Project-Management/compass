@@ -1,13 +1,6 @@
 import { API_URL } from './config'
 import { endSession, getSession } from '@/shared/session/session'
 
-// Thrown to tell callers the backend refused the access token (apiFetch has already ended the session).
-export class UnauthorizedError extends Error {
-  constructor() {
-    super('Your session has expired. Please log in again.')
-  }
-}
-
 // fetch for the endpoints that need a login: adds the access token and handles a refused one.
 export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const session = getSession()

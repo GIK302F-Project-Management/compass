@@ -1,10 +1,9 @@
-// "90" -> "1 h 30 min", "45" -> "45 min", "120" -> "2 h"
+// 45 -> "45m", 120 -> "2h", 135 -> "2h 15m"
 export function formatMinutes(total: number) {
   const hours = Math.floor(total / 60)
   const minutes = total % 60
-  if (hours === 0) return `${minutes} min`
-  if (minutes === 0) return `${hours} h`
-  return `${hours} h ${minutes} min`
+  if (hours === 0) return `${minutes}m`
+  return minutes === 0 ? `${hours}h` : `${hours}h ${minutes}m`
 }
 
 // Reads what a student types for hours: "2", "1.5" and "1,5" are all fine, anything else is not.
