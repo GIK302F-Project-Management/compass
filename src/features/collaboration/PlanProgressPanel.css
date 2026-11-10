@@ -16,6 +16,7 @@
   color: var(--accent);
 }
 .progress-counts {
+  color: var(--ink-soft);
 }
 .progress-members {
   width: 100%;
@@ -37,6 +38,7 @@
   font: 500 12px var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--ink-soft);
 }
 .progress-members td {
   font-family: var(--mono);

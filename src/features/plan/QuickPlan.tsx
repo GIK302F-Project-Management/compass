@@ -4,10 +4,8 @@ import { clearLastPlan, loadLastPlan, saveLastPlan, type SavedPlan } from './api
 import { generateStudyPlan, type PlanFailure } from '@/shared/api/studyPlans'
 import { useActivePlan } from '@/shared/plans/useCurrentPlan'
 import { useSession } from '@/shared/session/useSession'
-import { AppHeader } from '@/shared/layout/AppHeader'
 import { PlanForm } from './PlanForm'
 import { PlanResult } from './PlanResult'
-import { Main } from '@/shared/layout/Main'
 import { addDays, toIsoDate } from '@/shared/utils/dates'
 import {
   MAX_DEADLINE_DAYS,
@@ -19,7 +17,7 @@ import {
   type PlanErrors,
   type PlanValues,
 } from './validation/plan'
-import './PlanPage.css'
+import './QuickPlan.css'
 
 const NO_ERRORS: PlanErrors = { goalErrors: {} }
 
@@ -40,7 +38,7 @@ function initialValues(saved: SavedPlan | null): PlanValues {
   return { ...saved.values, startDate: saved.values.startDate < today ? today : saved.values.startDate }
 }
 
-export function PlanPage() {
+export function QuickPlan() {
   const session = useSession()
   const ownerEmail = session?.email ?? ''
   const activePlan = useActivePlan()
@@ -146,32 +144,29 @@ export function PlanPage() {
   const showPrefillNote = values.goals.some((goal) => prefilledIds.includes(goal.id))
 
   return (
-    <>
-      <AppHeader title="Study plan" />
-      <Main className="plan-page">
-        <header className="page-intro">
-          <p className="kicker">Plan your route</p>
-          <h2>Turn your deadlines into a daily plan.</h2>
-          <p>
-            Tell Compass how much time you have and what is due. It spreads the work over your days, earliest deadlines
-            first.
-          </p>
-        </header>
+    <div className="plan-page">
+      <header className="page-intro">
+        <p className="kicker">Plan your route</p>
+        <h2>Turn your deadlines into a daily plan.</h2>
+        <p>
+          Tell Compass how much time you have and what is due. It spreads the work over your days, earliest deadlines
+          first.
+        </p>
+      </header>
 
-        <PlanForm
-          values={values}
-          errors={errors}
-          generating={generating}
-          hasPlan={saved !== null}
-          showPrefillNote={showPrefillNote}
-          formRef={formRef}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          onReset={handleReset}
-        />
+      <PlanForm
+        values={values}
+        errors={errors}
+        generating={generating}
+        hasPlan={saved !== null}
+        showPrefillNote={showPrefillNote}
+        formRef={formRef}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        onReset={handleReset}
+      />
 
-        {saved && <PlanResult saved={saved} headingRef={resultHeadingRef} />}
-      </Main>
-    </>
+      {saved && <PlanResult saved={saved} headingRef={resultHeadingRef} />}
+    </div>
   )
 }

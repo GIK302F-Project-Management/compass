@@ -1,0 +1,20 @@
+.legacy-banner {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1.5px dashed var(--ink);
+  background: var(--accent-bg);
+}
+.legacy-banner p {
+  margin: 0;
+}
+.legacy-banner p:empty {
+  display: none;
+}
+.legacy-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

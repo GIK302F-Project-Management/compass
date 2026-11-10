@@ -149,7 +149,7 @@ export function ActivityPage() {
           {problem && <p role="alert">{problem}</p>}
           <div className="activity-actions">
             {!activity.done && (
-              <Link to={`/route?activity=${activity.id}`} className="button button-small button-route activity-plan">
+              <Link to={`/planner?activity=${activity.id}`} className="button button-small button-route activity-plan">
                 Plan this activity with AI
               </Link>
             )}

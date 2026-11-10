@@ -36,7 +36,7 @@ export default defineConfig([
       ],
     },
   },
-  // Features stand side by side, except for these one-way links: home -> route -> activities, and home -> collaboration.
+  // Features stand side by side, except for these one-way links: home -> route -> activities, home -> collaboration, and planner -> route and plan.
   // Anything that needs two features at once goes in home or in app, never in a cycle.
   {
     files: ['src/features/activities/**/*.{ts,tsx}'],
@@ -47,7 +47,7 @@ export default defineConfig([
           patterns: [
             { group: ['@/app/*'], message: 'features cannot depend on the app shell that wires them together.' },
             {
-              group: ['@/features/route/*', '@/features/home/*'],
+              group: ['@/features/route/*', '@/features/home/*', '@/features/planner/*'],
               message: 'activities is used by route and home, so it cannot depend on them.',
             },
           ],
@@ -63,7 +63,10 @@ export default defineConfig([
         {
           patterns: [
             { group: ['@/app/*'], message: 'features cannot depend on the app shell that wires them together.' },
-            { group: ['@/features/home/*'], message: 'home is built from route, so route cannot depend on it.' },
+            {
+              group: ['@/features/home/*', '@/features/planner/*'],
+              message: 'home and planner are built from route, so route cannot depend on them.',
+            },
           ],
         },
       ],

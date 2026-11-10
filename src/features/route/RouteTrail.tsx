@@ -169,11 +169,11 @@ export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProp
         )}
         <div className="today-card-actions">
           {(finished || hereIndex === -1) && (
-            <Link to="/route?new=1" className="button button-small button-primary">
+            <Link to="/planner?new=1" className="button button-small button-primary">
               Plot a new route
             </Link>
           )}
-          <Link to="/route" className="button button-small">
+          <Link to="/planner" className="button button-small">
             Open route →
           </Link>
         </div>

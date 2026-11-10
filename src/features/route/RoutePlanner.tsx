@@ -16,12 +16,10 @@ import { isSessionDone, toggleSession } from './api/routeProgress'
 import { listPlanTasks, updateTask, type Task } from '@/features/activities/api/tasks'
 import { ContourHill } from '@/shared/ui/MapShapes'
 import { SessionItem } from './SessionItem'
-import { AppHeader } from '@/shared/layout/AppHeader'
-import { Main } from '@/shared/layout/Main'
 import { daysBetween, formatDueDate, todayIso } from '@/shared/utils/dates'
 import { formatMinutes } from '@/shared/utils/duration'
 import { estimateToHours, MAX_ESTIMATE_HOURS, parseEstimate } from '@/features/activities/validation/task'
-import './RoutePlannerPage.css'
+import './RoutePlanner.css'
 
 const MAX_DAYS_AHEAD = 365 // the backend rejects deadlines further than this from the start date
 const MAX_GOALS = 100 // the backend accepts at most 100 goals per plan
@@ -83,12 +81,12 @@ function sheetLabel(index: number) {
 }
 
 // The route is made for one plan, so switching plans starts the page over (hence the key).
-export function RoutePlannerPage() {
+export function RoutePlanner() {
   const plan = useActivePlan()
-  return <RoutePlanner key={plan.id} plan={plan} />
+  return <RoutePlannerForPlan key={plan.id} plan={plan} />
 }
 
-function RoutePlanner({ plan }: { plan: Plan }) {
+function RoutePlannerForPlan({ plan }: { plan: Plan }) {
   const [session] = useState(getSession)
   const ownerEmail = session?.email ?? ''
   const scope: RouteScope = { ownerEmail, planId: plan.id }
@@ -143,8 +141,7 @@ function RoutePlanner({ plan }: { plan: Plan }) {
   if (!session || expired) {
     return (
       <>
-        <AppHeader title="Route planner" />
-        <Main className="route-page">
+        <div className="route-page">
           <p className="kicker">Off the map</p>
           <h2 className="route-title">Log in to plot a route.</h2>
           <p>
@@ -154,7 +151,7 @@ function RoutePlanner({ plan }: { plan: Plan }) {
             </Link>{' '}
             and come back here.
           </p>
-        </Main>
+        </div>
       </>
     )
   }
@@ -329,14 +326,13 @@ function RoutePlanner({ plan }: { plan: Plan }) {
   if (phase === 'plotting') {
     return (
       <>
-        <AppHeader title="Route planner" />
-        <Main className="route-page">
+        <div className="route-page">
           <Plotting
             goals={plotting.goals}
             dailyMinutes={plotting.dailyMinutes}
             onCancel={() => abortRef.current?.abort()}
           />
-        </Main>
+        </div>
       </>
     )
   }
@@ -344,8 +340,7 @@ function RoutePlanner({ plan }: { plan: Plan }) {
   if (phase === 'itinerary' && route) {
     return (
       <>
-        <AppHeader title="Route planner" />
-        <Main className="route-page">
+        <div className="route-page">
           {error && (
             <p className="form-error" role="alert">
               {error}
@@ -359,15 +354,14 @@ function RoutePlanner({ plan }: { plan: Plan }) {
             onReplot={replot}
             onNewBriefing={() => setPhase('briefing')}
           />
-        </Main>
+        </div>
       </>
     )
   }
 
   return (
     <>
-      <AppHeader title="Route planner" />
-      <Main className="route-page">
+      <div className="route-page">
         <header className="route-header">
           <p className="kicker">Route briefing</p>
           <h2 className="route-title">
@@ -552,7 +546,7 @@ function RoutePlanner({ plan }: { plan: Plan }) {
             </button>
           </div>
         </form>
-      </Main>
+      </div>
     </>
   )
 }

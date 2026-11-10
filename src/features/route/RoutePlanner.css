@@ -1,7 +1,6 @@
 .route-page {
-  width: calc(100% - 32px);
   max-width: 720px;
-  margin: 2.5rem auto 3rem;
+  margin: 0 auto;
 }
 .route-header {
   display: flex;

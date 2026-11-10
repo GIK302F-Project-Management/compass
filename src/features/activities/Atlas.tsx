@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { deleteActivity, listActivities, type Activity } from './api/activities'
 import { useActivePlan } from '@/shared/plans/useCurrentPlan'
 import { ActivityForm } from './ActivityForm'
+import { LegacyImportBanner } from './LegacyImportBanner'
 import { PencilIcon, TrashIcon } from '@/shared/ui/Icons'
 import { SheetMap } from './SheetMap'
 import { formatDueDate, parseDueDate } from '@/shared/utils/dates'
@@ -45,6 +46,12 @@ export function Atlas() {
       .catch(() => setProblem('Could not load the activities. Refresh the page to try again.'))
       .finally(() => setLoading(false))
   }, [plan.id])
+
+  function reload() {
+    listActivities(plan.id)
+      .then(setActivities)
+      .catch(() => setProblem('Could not load the activities. Refresh the page to try again.'))
+  }
 
   function openNewForm() {
     setEditingId(null)
@@ -98,6 +105,7 @@ export function Atlas() {
       </form>
 
       <div className="atlas">
+        <LegacyImportBanner planId={plan.id} planName={plan.name} onImported={reload} />
         <p className="kicker atlas-count">
           {plan.name} ·{' '}
           {searching

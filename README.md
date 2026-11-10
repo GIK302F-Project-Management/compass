@@ -63,8 +63,9 @@ src/
 │   ├── collaboration/  # Shared plans (/plans): plan list, members, invitation links (/join/<token>), plan progress
 │   ├── home/           # The page after login: the atlas plus the route card/trail. Built from activities, route and collaboration
 │   ├── goals/          # Learning goals
-│   ├── plan/           # Quick plan (/plan): type goals and hours by hand, get a daily plan
-│   ├── route/          # AI route (/route): plan the tasks of your activities, plus the route widgets of the home page
+│   ├── planner/        # The Planner page (/planner): one page, two ways to plan. Built from route and plan
+│   ├── plan/           # Plan by hand (QuickPlan): type goals and hours, get a daily plan
+│   ├── route/          # Plan from activities (RoutePlanner): the tasks of your activities, plus the route widgets of the home page
 │   └── landing/        # Public landing page
 │   Each feature has: *Page.tsx and components with their .css, api/ (server calls), validation/ (form rules)
 ├── shared/             # Used by several features. Never imports from features/ or app/ (enforced by ESLint)
@@ -82,13 +83,15 @@ src/
 Rules that keep this tidy:
 
 - Dependencies point one way: `app` -> `features` -> `shared`. ESLint fails the build if `shared` imports a feature, or a feature imports `app`.
-- Between features there is one chain, `home` -> `route` -> `activities`, plus `home` -> `collaboration`, also enforced by ESLint. Code that needs two features at once goes in `home` (or `app`), never in a cycle.
+- Between features there is one chain, `home` -> `route` -> `activities`, plus `home` -> `collaboration` and `planner` -> `route`/`plan`, also enforced by ESLint. Code that needs two features at once goes in `home` (or `app`), never in a cycle.
 - One definition per thing: `POST /api/study-plans` is called by `generateStudyPlan` in `shared/api/studyPlans.ts` (both planners use it), and durations are formatted by `formatMinutes` in `shared/utils/duration.ts` ("2h 15m").
 - Inside a feature use relative imports. Across folders use the `@/` alias, which means `src/` (for example `@/shared/ui/FormField`).
 - Tests sit next to the code as `*.test.ts[x]`. Each component has its stylesheet next to it, with the same name.
 - Activities and tasks live in the backend, inside a **plan** (`shared/api/plans.ts`, `features/activities/api/`). Every student has a
   personal plan ("My plan"); any plan can be shared with an invitation link (`/join/<token>`), and its members all see and
   edit the same activities. The plan the student works in is chosen in the header (`shared/plans/`) and remembered per account.
+- Activities saved in the browser by Sprint 1 are offered for moving into the current plan (`LegacyImportBanner` in the atlas, `features/activities/api/legacyData.ts`);
+  this code can be deleted once nobody has old data left.
 - Only the saved AI route (`features/route/api/savedRoute.ts`) is still kept in `localStorage`, per account and plan.
 
 ## Workflow
