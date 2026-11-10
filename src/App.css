@@ -23,6 +23,16 @@
     margin-right: 8px;
     font-weight: 500;
 }
+.invite-button{
+    border-color: var(--accent);
+    background: var(--accent-bg);
+    color: var(--accent);
+}
+.invite-button:hover{
+    border-color: var(--accent);
+    background: var(--paper);
+    color: var(--accent);
+}
 
 .logo{
     display: inline-flex;
@@ -575,6 +585,11 @@
     flex-shrink: 0;
     color: var(--accent);
 }
+.sheet-header-group{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 .sheet-body{
     flex: 1;
     display: flex;
@@ -651,6 +666,38 @@
     font-weight: 600;
     color: var(--accent);
 }
+.activity-collaboration{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 8px 0 4px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--line);
+    border-left: 3px solid var(--accent);
+    background: var(--paper-2);
+}
+.activity-collaboration > p:not(.kicker){
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+.collaborator-list{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.collaborator-list li{
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    font-family: var(--mono);
+    font-size: 11px;
+}
 .progress-track{
     height: 10px;
     border: 1.5px solid var(--ink);
@@ -663,6 +710,90 @@
     height: 100%;
     background: var(--accent);
     transition: width 0.3s ease;
+}
+.modal-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    overflow-y: auto;
+    padding: 20px;
+    background: rgb(17 24 39 / 55%);
+}
+.modal{
+    position: relative;
+    width: min(100%, 440px);
+    box-sizing: border-box;
+    padding: 32px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 8px 8px 0 var(--accent);
+}
+.modal h2{
+    margin: 0 32px 10px 0;
+    font-size: clamp(24px, 5vw, 30px);
+    line-height: 1.15;
+}
+.modal > p{
+    margin: 0 0 24px;
+    color: var(--ink-soft);
+}
+.modal form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.modal form label{
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+.modal form input{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px var(--sans);
+}
+.modal form input:focus{
+    outline: none;
+    box-shadow: 4px 4px 0 var(--accent);
+}
+.modal-close{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    font: 24px/1 var(--sans);
+    cursor: pointer;
+}
+.modal-close:hover{
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.modal-close:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.modal-actions{
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
 }
 
 /* Tasks drawn as a route, with a checkbox as each waypoint */
@@ -794,6 +925,18 @@
 }
 @media (prefers-reduced-motion: reduce){
     .progress-track span{ transition: none; }
+}
+@media (max-width: 480px){
+    .modal{
+        padding: 26px 20px 20px;
+    }
+    .modal-actions > .button{
+        flex: 1;
+    }
+    .sheet-header-group{
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
 }
 
 /* ---------- Small shared buttons ---------- */

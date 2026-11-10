@@ -98,7 +98,8 @@ export function Activity() {
             actions={
                 <>
                     <button
-                        className="text-link"
+                        type="button"
+                        className="button button-small invite-button"
                         onClick={switchInviteModal}
                     >
                         Invite a collaborator
