@@ -8,6 +8,7 @@ import { Activity } from './pages/ActivityPage';
 import { PlanPage } from './pages/PlanPage';
 import { NotFound } from './pages/NotFound';
 import { GuestOnly, RequireAuth } from './components/RouteGuards';
+import { RoutePlanner } from './pages/RoutePlanner';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/activity/:id" element={<Activity />} />
             <Route path="/plan" element={<PlanPage />} />
+            <Route path="/route" element={<RoutePlanner />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1104,3 +1104,754 @@
         column-gap: 14px;
     }
 }
+
+/* ---------- AI route planner ---------- */
+/* entry points: Home top bar and the activity header */
+.button-route{
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.button-route::before{
+    content: "✦";
+    font-size: 0.85em;
+}
+.activity-plan{
+    align-self: flex-start;
+}
+
+.route-page{
+    width: calc(100% - 32px);
+    max-width: 720px;
+    margin: 2.5rem auto 3rem;
+}
+.route-header{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2rem;
+}
+.route-header > p:last-child{
+    margin: 0;
+}
+.route-title{
+    margin: 0;
+    font-size: clamp(32px, 5vw, 44px);
+    letter-spacing: -0.03em;
+}
+.route-title em,
+.route-stats em{
+    font-style: normal;
+    color: var(--accent);
+}
+.route-stats{
+    margin: 0;
+    color: var(--ink);
+}
+.route-stats em{
+    font-weight: 600;
+}
+.route-source{
+    padding: 1px 6px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+}
+
+/* briefing form */
+.briefing{
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+.briefing-row{
+    display: grid;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+    gap: 24px;
+}
+.pace-control{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 47px;
+}
+.pace-control input[type="range"]{
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    accent-color: var(--accent);
+    background: transparent;
+}
+.pace-control input[type="range"]:focus{
+    box-shadow: none;
+}
+/* fixed width so the slider does not grow or shrink between "6h" and "6h 15m" */
+.pace-control output{
+    flex: 0 0 140px;
+    white-space: nowrap;
+    font: 600 20px var(--serif);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    text-align: right;
+}
+.pace-control output span{
+    font: 400 13px var(--mono);
+    color: var(--ink-soft);
+}
+
+.destinations{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 1.5px solid var(--ink);
+    background: var(--paper-2);
+    box-shadow: 6px 6px 0 var(--ink);
+}
+.destinations legend{
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 14px;
+    border-bottom: 1.5px solid var(--ink);
+    font: 500 11px var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+}
+.destinations > .field-hint{
+    margin: 0;
+    padding: 16px 14px;
+}
+.destination{
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 16px;
+    padding: 14px;
+    border-bottom: 1px dashed var(--line);
+}
+.destination:last-child{
+    border-bottom: 0;
+}
+.dest-group-head + .destination{
+    border-top: 1px dashed var(--line);
+}
+.destination.picked{
+    background: var(--accent-bg);
+}
+.destination.unreachable{
+    opacity: 0.55;
+}
+.destination input[type="checkbox"]{
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent);
+}
+.destination label{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+}
+.destination.unreachable label{
+    cursor: default;
+}
+.destination-title{
+    font: 500 17px/1.3 var(--sans);
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+.destination-due{
+    font-size: 14px;
+}
+.destination-hours{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 500 14px var(--mono);
+    color: var(--ink);
+}
+.destination-hours input{
+    width: 68px;
+    padding: 8px 10px;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px var(--sans);
+    text-align: right;
+}
+.destination-hours input:focus{
+    outline: none;
+    box-shadow: 3px 3px 0 var(--accent);
+}
+.destination-hours input:disabled{
+    opacity: 0.4;
+}
+.briefing-actions,
+.itinerary-actions{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+}
+.itinerary-actions{
+    justify-content: flex-start;
+    margin-top: 1rem;
+}
+
+/* waiting while the AI plots */
+.plotting{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 2rem 0;
+    text-align: center;
+}
+.plotting p{
+    margin: 0;
+    max-width: 420px;
+}
+.plotting-map{
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 12px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper-2);
+    box-shadow: 6px 6px 0 var(--ink);
+}
+.plotting-route{
+    animation: march 0.9s linear infinite;
+}
+@keyframes march{
+    to { stroke-dashoffset: -20.2; }
+}
+
+/* uncharted minutes */
+.uncharted{
+    margin-bottom: 2rem;
+    padding: 14px 16px;
+    border: 1.5px solid var(--accent);
+    background: var(--accent-bg);
+}
+.uncharted ul{
+    margin: 8px 0;
+    padding-left: 18px;
+    color: var(--ink);
+}
+.uncharted .field-hint{
+    margin: 0;
+}
+
+/* itinerary: one stop per day, drawn like the task route */
+.itinerary{
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+}
+.stop{
+    position: relative;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: 20px;
+    padding-bottom: 28px;
+}
+.stop::before{
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 26px;
+    bottom: 2px;
+    border-left: 2px dashed var(--accent);
+}
+.stop:last-child::before{
+    display: none;
+}
+.stop-marker{
+    grid-row: 1 / span 3;
+    width: 20px;
+    height: 20px;
+    box-sizing: border-box;
+    margin-top: 1px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper);
+}
+.stop-flag .stop-marker{
+    border-color: var(--accent);
+    background: var(--accent);
+}
+.stop > :not(.stop-marker){
+    grid-column: 2;
+}
+.stop-head{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 16px;
+    min-height: 22px;
+}
+.stop-head .kicker{
+    color: var(--ink);
+}
+.stop-load{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 400 12px var(--mono);
+    color: var(--ink-soft);
+}
+.load-track{
+    width: 90px;
+    height: 8px;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    overflow: hidden;
+}
+.load-track span{
+    display: block;
+    height: 100%;
+    background: var(--ink);
+}
+.stop-sessions{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+}
+.stop-sessions li{
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper-2);
+    transition: opacity 0.15s ease;
+}
+.stop-sessions input[type="checkbox"]{
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--ink);
+    cursor: pointer;
+}
+.stop-sessions label{
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    cursor: pointer;
+}
+.session-context{
+    font-size: 13px;
+    color: var(--ink-soft);
+    overflow-wrap: anywhere;
+}
+.stop-sessions li.session-done{
+    opacity: 0.6;
+}
+.session-done .session-title{
+    text-decoration: line-through;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+}
+.stop-done .stop-marker{
+    background: var(--ink);
+}
+.route-header .progress-track{
+    margin-top: 4px;
+}
+
+/* home page layout: atlas on the left, route trail on the right (wide screens only) */
+.home-layout{
+    width: calc(100% - 32px);
+    max-width: 1040px;
+    margin: 0 auto;
+}
+.home-layout #search-form,
+.home-layout #curr-activities-holder.atlas,
+.home-layout .today-card{
+    width: 100%;
+    max-width: none;
+}
+.route-trail{
+    display: none;
+}
+@media (min-width: 1100px){
+    .home-layout.with-trail{
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        align-items: start;
+        gap: 40px;
+        max-width: 1440px;
+    }
+    .with-trail .today-card{
+        display: none;
+    }
+    .with-trail .route-trail{
+        display: flex;
+    }
+}
+
+/* route trail: the saved route as a path winding down the side of the page */
+/* no box: the trail is drawn straight onto a faint contour map */
+.route-trail{
+    position: sticky;
+    top: 24px;
+    flex-direction: column;
+    max-height: calc(100vh - 48px);
+    margin: 2.5rem 0 3rem;
+}
+.trail-terrain{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.55;
+    pointer-events: none;
+    /* the map fades out towards the edges instead of ending in a hard line */
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 45%, transparent 80%);
+    mask-image: radial-gradient(ellipse at center, #000 45%, transparent 80%);
+}
+.trail-head,
+.trail-scroll,
+.trail-foot{
+    position: relative; /* above the terrain */
+}
+.trail-head{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 0 14px;
+}
+.trail-head-row{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+.trail-scroll{
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 22px 4px 18px 0;
+    scrollbar-width: thin;
+    /* stops fade in and out at the top and bottom of the scroll area */
+    -webkit-mask-image: linear-gradient(transparent, #000 22px, #000 calc(100% - 22px), transparent);
+    mask-image: linear-gradient(transparent, #000 22px, #000 calc(100% - 22px), transparent);
+}
+/* The trail runs down a 40px lane on the left of the stops; its centre is 20px into the lane. */
+.trail{
+    margin: 0;
+    padding: 0 0 0 40px;
+    list-style: none;
+}
+.trail-stop{
+    position: relative;
+    padding-bottom: 22px;
+}
+/* straight dotted segment from this waypoint down to the next one, like the map routes */
+.trail-stop::before{
+    content: '';
+    position: absolute;
+    left: -21.5px;
+    top: 11px;
+    bottom: -11px;
+    width: 3px;
+    background: radial-gradient(circle, var(--accent) 1.5px, transparent 1.8px) center top / 3px 10px repeat-y;
+}
+.trail-stop:last-child::before{
+    display: none;
+}
+/* every waypoint looks the same: an open circle still ahead on the route */
+.trail-marker{
+    position: absolute;
+    z-index: 1;
+    left: -29px;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper);
+}
+/* days when a task is due get a flag instead */
+.trail-deadline .trail-marker{
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+.trail-deadline .trail-marker svg{
+    display: block;
+    width: 18px;
+    height: 18px;
+}
+.trail-stop-head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-height: 22px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+button.trail-stop-head{
+    cursor: pointer;
+}
+button.trail-stop-head:hover .kicker{
+    color: var(--accent);
+}
+button.trail-stop-head:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+.trail-stop-head .kicker{
+    color: var(--ink);
+    transition: color 0.12s ease;
+}
+.trail-today .trail-stop-head .kicker{
+    color: var(--accent);
+}
+.trail-minutes{
+    flex-shrink: 0;
+    font: 12px var(--mono);
+    color: var(--ink-soft);
+}
+.trail-summary{
+    margin: 2px 0 0;
+    overflow: hidden;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.trail-summary span{
+    color: var(--ink-soft);
+}
+.trail-sessions{
+    margin-top: 8px;
+}
+.trail-sessions li{
+    padding: 8px 10px;
+    gap: 10px;
+    background: var(--paper);
+    font-size: 15px;
+}
+.trail-sessions .session-context{
+    font-size: 12px;
+}
+.trail .stop-deadline{
+    margin-top: 4px;
+    font-size: 12px;
+}
+.trail-foot{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 0 0;
+}
+.trail-foot .today-card-behind{
+    font-size: 13px;
+}
+
+/* home page: what the saved route asks for today */
+.today-card{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: calc(100% - 32px);
+    max-width: 1040px;
+    box-sizing: border-box;
+    margin: 2.5rem auto 0;
+    padding: 18px 20px 20px;
+    border: 1.5px solid var(--ink);
+    background: var(--paper-2);
+    box-shadow: 6px 6px 0 var(--accent);
+}
+.today-card-head{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 16px;
+}
+.today-card-count{
+    font: 500 13px var(--mono);
+    color: var(--ink);
+}
+.today-card .stop-sessions{
+    margin: 4px 0 0;
+}
+.today-card .stop-sessions li{
+    background: var(--paper);
+}
+.today-card-note,
+.today-card-behind{
+    margin: 0;
+    font-size: 14px;
+}
+.today-card-behind{
+    color: var(--accent);
+}
+.today-card-actions{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* today and the days already behind */
+.stop-today .stop-marker{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-bg);
+}
+.today-badge{
+    margin-right: 10px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: var(--accent);
+    color: var(--paper);
+}
+.stop-past{
+    opacity: 0.55;
+}
+.stop{
+    scroll-margin-top: 24px;
+}
+.route-preferences{
+    margin: 0;
+    font-size: 14px;
+}
+.route-preferences q{
+    font-style: italic;
+    color: var(--ink);
+}
+
+/* briefing: preferences */
+.preset-chips{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.preset-chip{
+    padding: 6px 12px;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 14px var(--sans);
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.preset-chip[aria-pressed="true"]{
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--paper);
+}
+.preset-chip[aria-pressed="true"]::before{
+    content: "✓ ";
+}
+.preset-chip:hover{
+    border-color: var(--accent);
+}
+.form-field textarea{
+    padding: 12px 14px;
+    border: 1.5px solid var(--ink);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.5 var(--sans);
+    resize: vertical;
+    transition: box-shadow 0.12s ease;
+}
+.form-field textarea:focus{
+    outline: none;
+    box-shadow: 4px 4px 0 var(--accent);
+}
+.char-count{
+    float: right;
+    font: 12px var(--mono);
+    color: var(--ink-soft);
+}
+
+/* briefing: tasks grouped under their activity */
+.dest-group + .dest-group{
+    border-top: 1.5px solid var(--ink);
+}
+.dest-group-head{
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 16px;
+    padding: 14px;
+    background: var(--paper);
+}
+.dest-group-head input[type="checkbox"]{
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent);
+}
+.dest-group-head label{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+}
+.dest-group-title{
+    font: 600 22px/1.2 var(--serif);
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+.dest-group .destination{
+    padding-left: 30px;
+}
+.dest-empty{
+    margin: 0;
+    padding: 4px 14px 14px 52px;
+    font-size: 14px;
+}
+.session-title{
+    color: var(--ink);
+    overflow-wrap: anywhere;
+}
+.session-time{
+    font: 500 13px var(--mono);
+    color: var(--ink);
+}
+.stop-deadline{
+    margin: 8px 0 0;
+    font: 500 13px var(--mono);
+    letter-spacing: 0.04em;
+    color: var(--accent);
+}
+.route-notice{
+    margin: 0 0 1rem;
+    color: var(--moss);
+}
+
+@media (max-width: 560px){
+    .briefing-row{
+        grid-template-columns: 1fr;
+    }
+    .stop-load .load-track{
+        width: 60px;
+    }
+}
+@media (prefers-reduced-motion: reduce){
+    .plotting-route{ animation: none; }
+}

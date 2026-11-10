@@ -3,6 +3,9 @@ import { Link } from 'react-router'
 import { deleteActivity, listActivities, type Activity } from '../api/activities'
 import { useSession } from '../hooks/useSession'
 import { ActivityForm } from '../components/ActivityForm'
+import { RouteTrail } from '../components/RouteTrail'
+import { TodayCard } from '../components/TodayCard'
+import { useRouteProgress } from '../hooks/useRouteProgress'
 import { PencilIcon, TrashIcon } from '../components/Icons'
 import { SheetMap } from '../components/SheetMap'
 import { TopBar } from '../components/TopBar'
@@ -29,6 +32,8 @@ export function Home(){
     const [loading, setLoading] = useState(true)
     const [formOpen, setFormOpen] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
+    const progress = useRouteProgress(ownerEmail)
+    const route = progress.route
 
     useEffect(() => {
         listActivities(ownerEmail)
@@ -67,6 +72,9 @@ export function Home(){
         title="Your atlas"
         actions={
             <>
+                <Link to="/route" className="button button-small button-route">
+                    {route ? 'My route' : 'Plot my route'}
+                </Link>
                 <Link to="/plan" className="button button-small">
                     Study plan
                 </Link>
@@ -74,6 +82,11 @@ export function Home(){
             </>
         }
     />
+    <div className={route ? 'home-layout with-trail' : 'home-layout'}>
+    <div className="home-main">
+    {route && progress.ready && (
+        <TodayCard route={route} taskById={progress.taskById} isDone={progress.isDone} onToggle={progress.toggle} />
+    )}
     <form id="search-form">
     <input
         type="search"
@@ -154,6 +167,11 @@ export function Home(){
                 + New activity
             </button>
         )}
+    </div>
+    </div>
+    {route && progress.ready && (
+        <RouteTrail route={route} taskById={progress.taskById} isDone={progress.isDone} onToggle={progress.toggle} />
+    )}
     </div>
     </>
 }

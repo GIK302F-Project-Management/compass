@@ -41,7 +41,10 @@ export function Register() {
       if (result.ok) {
         setRegistered(true)
       } else {
-        setErrors({ email: `Use your university email (name@${UNIVERSITY_EMAIL_DOMAIN}).` })
+        const fieldErrors = result.errors
+        setErrors(Object.keys(fieldErrors).length > 0
+          ? fieldErrors
+          : { email: `Use your university email (name@${UNIVERSITY_EMAIL_DOMAIN}).` })
       }
     } catch {
       setErrors({ form: 'Something went wrong while creating your account. Please try again.' })

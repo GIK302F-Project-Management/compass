@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { createTask, updateTask, type Task } from '../api/tasks'
-import { validateTask, type TaskErrors, type TaskValues } from '../validation/task'
+import { estimateToHours, parseEstimate, validateTask, type TaskErrors, type TaskValues } from '../validation/task'
 import { FormField } from './FormField'
 
 type TaskFormProps = {
@@ -17,6 +17,7 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
     title: task?.title ?? '',
     details: task?.details ?? '',
     dueDate: task?.dueDate ?? '',
+    estimate: estimateToHours(task?.estimatedMinutes),
   })
   const [errors, setErrors] = useState<TaskErrors>({})
   const [submitting, setSubmitting] = useState(false)
@@ -39,7 +40,13 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
 
     setSubmitting(true)
     try {
-      onSaved(task ? await updateTask(task.id, values) : await createTask(activityId, values))
+      const input = {
+        title: values.title,
+        details: values.details,
+        dueDate: values.dueDate,
+        estimatedMinutes: parseEstimate(values.estimate),
+      }
+      onSaved(task ? await updateTask(task.id, input) : await createTask(activityId, input))
     } catch {
       setErrors({ form: 'Could not save the task. Please try again.' })
       setSubmitting(false)
@@ -64,6 +71,15 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
         type="date"
         value={values.dueDate}
         onChange={handleChange('dueDate')}
+      />
+      <FormField
+        id={`${idPrefix}-estimate`}
+        label="Estimate (hours)"
+        hint="Optional. How long it should take, e.g. 1.5. The route planner uses it."
+        value={values.estimate}
+        onChange={handleChange('estimate')}
+        inputMode="decimal"
+        error={errors.estimate}
       />
       {errors.form && (
         <p className="form-error" role="alert">

@@ -7,7 +7,7 @@ type FormFieldProps = {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void
   type?: 'text' | 'email' | 'password' | 'date'
   autoComplete?: string
-  inputMode?: 'text' | 'decimal'
+  inputMode?: 'text' | 'decimal' | 'numeric'
   placeholder?: string
   min?: string // earliest allowed value, for date fields
   max?: string // latest allowed value, for date fields
