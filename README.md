@@ -62,6 +62,7 @@ src/
 │   ├── activities/     # The atlas (HomePage), an activity and its tasks (ActivityPage)
 │   ├── goals/          # Learning goals
 │   ├── plan/           # AI study plan: form, result and the last saved plan
+│   ├── route/          # AI route planner (/route) and the route widgets shown on the home page
 │   └── landing/        # Public landing page
 │   Each feature has: *Page.tsx and components with their .css, api/ (server calls), validation/ (form rules)
 ├── shared/             # Used by several features. Never imports from features/ or app/ (enforced by ESLint)
