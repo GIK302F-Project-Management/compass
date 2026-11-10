@@ -1,0 +1,36 @@
+.invitations {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.invitations h3,
+.invitations p {
+  margin: 0;
+}
+.invitation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.invitation-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.invitation-list input {
+  flex: 1 1 260px;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font: 13px var(--mono);
+}
+.invitation-expiry {
+  font: 500 12px var(--mono);
+}

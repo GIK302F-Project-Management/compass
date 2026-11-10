@@ -1,0 +1,28 @@
+.plan-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.plan-switcher label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.plan-switcher select {
+  max-width: 220px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+  font: inherit;
+  color: var(--ink);
+}
+.plan-switcher-name {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}

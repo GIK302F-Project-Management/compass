@@ -36,7 +36,7 @@ export default defineConfig([
       ],
     },
   },
-  // Features stand side by side, except for these one-way links: home -> route -> activities.
+  // Features stand side by side, except for these one-way links: home -> route -> activities, and home -> collaboration.
   // Anything that needs two features at once goes in home or in app, never in a cycle.
   {
     files: ['src/features/activities/**/*.{ts,tsx}'],
@@ -70,8 +70,26 @@ export default defineConfig([
     },
   },
   {
+    files: ['src/features/collaboration/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['@/app/*'], message: 'features cannot depend on the app shell that wires them together.' },
+            {
+              group: ['@/features/*'],
+              message:
+                'collaboration (shared plans) stands on its own; other features show its pieces, not the reverse.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/features/**/*.{ts,tsx}'],
-    ignores: ['src/features/activities/**', 'src/features/route/**'],
+    ignores: ['src/features/activities/**', 'src/features/route/**', 'src/features/collaboration/**'],
     rules: {
       'no-restricted-imports': [
         'error',

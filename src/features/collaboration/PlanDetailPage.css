@@ -1,0 +1,30 @@
+.plan-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  box-sizing: border-box;
+  margin: 2.5rem auto 4rem;
+}
+.plan-detail-page p {
+  margin: 0;
+}
+.plan-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+}
+.rename-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+.plan-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem 3rem;
+  align-items: start;
+}

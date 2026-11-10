@@ -7,9 +7,13 @@ import { ActivityPage } from '@/features/activities/ActivityPage'
 import { PlanPage } from '@/features/plan/PlanPage'
 import { GoalsPage } from '@/features/goals/GoalsPage'
 import { RoutePlannerPage } from '@/features/route/RoutePlannerPage'
+import { PlansPage } from '@/features/collaboration/PlansPage'
+import { PlanDetailPage } from '@/features/collaboration/PlanDetailPage'
+import { JoinPage } from '@/features/collaboration/JoinPage'
 import { NotFoundPage } from './NotFoundPage'
 import { GuestOnly, RequireAuth } from '@/features/auth/RouteGuards'
 import { SkipLink } from '@/shared/layout/SkipLink'
+import { WithCurrentPlan } from '@/shared/plans/WithCurrentPlan'
 
 function App() {
   return (
@@ -22,11 +26,16 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
         </Route>
         <Route element={<RequireAuth />}>
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/activity/:id" element={<ActivityPage />} />
-          <Route path="/goals" element={<GoalsPage />} />
-          <Route path="/plan" element={<PlanPage />} />
-          <Route path="/route" element={<RoutePlannerPage />} />
+          <Route element={<WithCurrentPlan />}>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/activity/:id" element={<ActivityPage />} />
+            <Route path="/goals" element={<GoalsPage />} />
+            <Route path="/plan" element={<PlanPage />} />
+            <Route path="/route" element={<RoutePlannerPage />} />
+            <Route path="/plans" element={<PlansPage />} />
+            <Route path="/plans/:id" element={<PlanDetailPage />} />
+            <Route path="/join/:token" element={<JoinPage />} />
+          </Route>
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

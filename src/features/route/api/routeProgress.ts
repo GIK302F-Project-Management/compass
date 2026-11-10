@@ -1,5 +1,5 @@
 import type { StudySession } from '@/shared/api/studyPlans'
-import { saveRoute, sessionAt, type SavedRoute } from './savedRoute'
+import { saveRoute, sessionAt, type RouteScope, type SavedRoute } from './savedRoute'
 import { updateTask, type Task } from '@/features/activities/api/tasks'
 
 // Shared by the route page and the "Today on your route" card on the home page.
@@ -12,7 +12,7 @@ export function isSessionDone(route: SavedRoute, index: number, taskById: Map<st
 // Ticking every session of a task marks the task done; unticking one reopens it.
 // Saves the route and returns it with the task when the task changed.
 export async function toggleSession(
-  ownerEmail: string,
+  scope: RouteScope,
   route: SavedRoute,
   index: number,
   taskById: Map<string, Task>,
@@ -34,9 +34,10 @@ export async function toggleSession(
     done = siblings.every((i) => checked.includes(i))
   }
 
-  const updatedRoute = { ...route, checked }
-  saveRoute(ownerEmail, updatedRoute)
+  // The task goes first: if the server refuses, the route is left as it was instead of disagreeing with the plan.
   const updatedTask = done !== task.done ? await updateTask(task.id, { done }) : null
+  const updatedRoute = { ...route, checked }
+  saveRoute(scope, updatedRoute)
   return { route: updatedRoute, task: updatedTask }
 }
 

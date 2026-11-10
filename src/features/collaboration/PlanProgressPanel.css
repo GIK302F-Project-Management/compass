@@ -1,0 +1,43 @@
+.progress-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.progress-panel h3,
+.progress-panel p {
+  margin: 0;
+}
+.progress-percent {
+  font-size: 18px;
+}
+.progress-percent em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--accent);
+}
+.progress-counts {
+}
+.progress-members {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+}
+.progress-members caption {
+  padding-bottom: 6px;
+  text-align: left;
+}
+.progress-members th,
+.progress-members td {
+  padding: 8px 10px;
+  border-top: 1.5px solid var(--ink);
+  text-align: left;
+}
+.progress-members thead th {
+  border-top: 0;
+  font: 500 12px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.progress-members td {
+  font-family: var(--mono);
+}

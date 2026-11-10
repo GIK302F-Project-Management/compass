@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { listActivities } from '@/features/activities/api/activities'
 import { clearLastPlan, loadLastPlan, saveLastPlan, type SavedPlan } from './api/lastPlan'
 import { generateStudyPlan, type PlanFailure } from '@/shared/api/studyPlans'
+import { useActivePlan } from '@/shared/plans/useCurrentPlan'
 import { useSession } from '@/shared/session/useSession'
 import { AppHeader } from '@/shared/layout/AppHeader'
 import { PlanForm } from './PlanForm'
@@ -42,6 +43,7 @@ function initialValues(saved: SavedPlan | null): PlanValues {
 export function PlanPage() {
   const session = useSession()
   const ownerEmail = session?.email ?? ''
+  const activePlan = useActivePlan()
   const [saved, setSaved] = useState(() => loadLastPlan(ownerEmail))
   const [values, setValues] = useState(() => initialValues(saved))
   const [errors, setErrors] = useState<PlanErrors>(NO_ERRORS)
@@ -58,28 +60,30 @@ export function PlanPage() {
   useEffect(() => {
     if (saved) return
     let cancelled = false
-    listActivities(ownerEmail).then((activities) => {
-      if (cancelled) return
-      const today = toIsoDate(new Date())
-      const lastDay = addDays(today, MAX_DEADLINE_DAYS)
-      const upcoming = activities.filter((a) => !a.done && a.dueDate >= today && a.dueDate <= lastDay)
-      if (upcoming.length === 0) return
-      setPrefilledIds(upcoming.map((a) => a.id))
-      setValues((current) => {
-        // Never overwrite something the student already typed.
-        const [onlyGoal] = current.goals
-        const untouched = current.goals.length === 1 && onlyGoal !== undefined && isPristineGoal(onlyGoal)
-        if (!untouched) return current
-        return {
-          ...current,
-          goals: upcoming.map((a) => ({ id: a.id, title: a.title, deadline: a.dueDate, hours: '' })),
-        }
+    listActivities(activePlan.id)
+      .catch(() => [])
+      .then((activities) => {
+        if (cancelled) return
+        const today = toIsoDate(new Date())
+        const lastDay = addDays(today, MAX_DEADLINE_DAYS)
+        const upcoming = activities.filter((a) => !a.done && a.dueDate >= today && a.dueDate <= lastDay)
+        if (upcoming.length === 0) return
+        setPrefilledIds(upcoming.map((a) => a.id))
+        setValues((current) => {
+          // Never overwrite something the student already typed.
+          const [onlyGoal] = current.goals
+          const untouched = current.goals.length === 1 && onlyGoal !== undefined && isPristineGoal(onlyGoal)
+          if (!untouched) return current
+          return {
+            ...current,
+            goals: upcoming.map((a) => ({ id: a.id, title: a.title, deadline: a.dueDate, hours: '' })),
+          }
+        })
       })
-    })
     return () => {
       cancelled = true
     }
-  }, [ownerEmail, saved])
+  }, [activePlan.id, saved])
 
   // After a failed submit, move the keyboard to the first field that needs attention.
   useEffect(() => {

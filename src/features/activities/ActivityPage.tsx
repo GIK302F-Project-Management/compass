@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { getActivity, type Activity as ActivitySheet } from './api/activities'
+import { getActivity, setActivityDone, type Activity as ActivitySheet } from './api/activities'
 import { deleteTask, listTasks, updateTask, type Task } from './api/tasks'
+import { getPlan } from '@/shared/api/plans'
 import { AppHeader } from '@/shared/layout/AppHeader'
 import { PencilIcon, TrashIcon } from '@/shared/ui/Icons'
 import { TaskForm } from './TaskForm'
@@ -17,6 +18,8 @@ export function ActivityPage() {
   const [loading, setLoading] = useState(true)
   const [formOpen, setFormOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [memberNames, setMemberNames] = useState<Record<string, string>>({}) // user id -> name, for "completed by"
+  const [problem, setProblem] = useState<string | null>(null)
   const doneCount = tasks.filter((task) => task.done).length
 
   useEffect(() => {
@@ -24,16 +27,48 @@ export function ActivityPage() {
       .then(([foundActivity, foundTasks]) => {
         setActivity(foundActivity)
         setTasks(foundTasks)
+        // The names are a nicety: without them the page just does not say who completed it.
+        if (foundActivity) {
+          getPlan(foundActivity.planId)
+            .then((plan) => setMemberNames(Object.fromEntries(plan.members.map((m) => [m.userId, m.name]))))
+            .catch(() => undefined)
+        }
       })
+      .catch(() => setProblem('Could not load the activity. Refresh the page to try again.'))
       .finally(() => setLoading(false))
   }, [id])
+
+  // Another member's change shows up on the next load; the server also reopens a completed activity
+  // when a task is added to it or reopened, so the page mirrors that.
+  function reopenLocally() {
+    setActivity((current) => (current?.done ? { ...current, done: false, doneBy: null } : current))
+  }
+
+  async function toggleActivityDone() {
+    if (!activity) return
+    try {
+      const updated = await setActivityDone(activity.id, !activity.done)
+      setActivity(updated)
+      if (updated.done) setTasks(await listTasks(updated.id)) // completing the activity completes its tasks
+      setProblem(null)
+    } catch {
+      setProblem('Could not update the activity. Please try again.')
+    }
+  }
 
   function replaceTask(updated: Task) {
     setTasks(tasks.map((task) => (task.id === updated.id ? updated : task)))
   }
 
   async function toggleTask(task: Task) {
-    replaceTask(await updateTask(task.id, { done: !task.done }))
+    try {
+      const updated = await updateTask(task.id, { done: !task.done })
+      replaceTask(updated)
+      if (!updated.done) reopenLocally()
+      setProblem(null)
+    } catch {
+      setProblem('Could not update the task. Please try again.')
+    }
   }
 
   function openNewForm() {
@@ -48,6 +83,7 @@ export function ActivityPage() {
 
   function handleCreated(task: Task) {
     setTasks([...tasks, task])
+    reopenLocally()
     setFormOpen(false)
   }
 
@@ -58,8 +94,13 @@ export function ActivityPage() {
 
   async function handleDelete(task: Task) {
     if (!window.confirm(`Delete "${task.title}"?`)) return
-    await deleteTask(task.id)
-    setTasks(tasks.filter((item) => item.id !== task.id))
+    try {
+      await deleteTask(task.id)
+      setTasks(tasks.filter((item) => item.id !== task.id))
+      setProblem(null)
+    } catch {
+      setProblem(`Could not delete "${task.title}". Please try again.`)
+    }
   }
 
   if (loading) {
@@ -99,11 +140,23 @@ export function ActivityPage() {
             {activity.subject ? `${activity.subject} · ` : ''}Due {formatDueDate(activity.dueDate)}
           </p>
           <h2>{activity.title}</h2>
-          {!activity.done && (
-            <Link to={`/route?activity=${activity.id}`} className="button button-small button-route activity-plan">
-              Plan this activity with AI
-            </Link>
+          {activity.done && (
+            <p className="activity-done" role="status">
+              Done
+              {activity.doneBy && memberNames[activity.doneBy] ? ` · completed by ${memberNames[activity.doneBy]}` : ''}
+            </p>
           )}
+          {problem && <p role="alert">{problem}</p>}
+          <div className="activity-actions">
+            {!activity.done && (
+              <Link to={`/route?activity=${activity.id}`} className="button button-small button-route activity-plan">
+                Plan this activity with AI
+              </Link>
+            )}
+            <button type="button" className="button button-small" onClick={toggleActivityDone}>
+              {activity.done ? 'Reopen activity' : 'Mark activity as done'}
+            </button>
+          </div>
           {tasks.length > 0 ? (
             <>
               <p className="activity-progress">

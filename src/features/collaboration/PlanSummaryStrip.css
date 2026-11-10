@@ -1,0 +1,16 @@
+.plan-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 2rem 0 0;
+}
+.plan-strip-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin: 0;
+}
+.plan-strip-line span {
+  font: 500 13px var(--mono);
+}

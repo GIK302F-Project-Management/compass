@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
-import { createTask, updateTask, type Task } from './api/tasks'
+import { createTask, updateTask, type Task, type TaskChanges, type TaskInput } from './api/tasks'
 import { estimateToHours, parseEstimate, validateTask, type TaskErrors, type TaskValues } from './validation/task'
 import { FormField } from '@/shared/ui/FormField'
 import './TaskForm.css'
@@ -42,12 +42,12 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
     setSubmitting(true)
     try {
       const input = {
-        title: values.title,
-        details: values.details,
+        title: values.title.trim(),
+        details: values.details.trim(),
         dueDate: values.dueDate,
         estimatedMinutes: parseEstimate(values.estimate),
       }
-      onSaved(task ? await updateTask(task.id, input) : await createTask(activityId, input))
+      onSaved(task ? await saveChanges(task, input) : await createTask(activityId, input))
     } catch {
       setErrors({ form: 'Could not save the task. Please try again.' })
       setSubmitting(false)
@@ -104,4 +104,14 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
       </div>
     </form>
   )
+}
+
+// Sends only what the student changed, so an edit never overwrites what another member changed meanwhile.
+async function saveChanges(task: Task, input: TaskInput): Promise<Task> {
+  const changes: TaskChanges = {}
+  if (input.title !== task.title) changes.title = input.title
+  if (input.details !== task.details) changes.details = input.details
+  if (input.dueDate !== task.dueDate) changes.dueDate = input.dueDate
+  if (input.estimatedMinutes !== task.estimatedMinutes) changes.estimatedMinutes = input.estimatedMinutes
+  return Object.keys(changes).length === 0 ? task : updateTask(task.id, changes)
 }
