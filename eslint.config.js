@@ -19,4 +19,68 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  // Dependencies point one way: app -> features -> shared. Code in a lower layer must not reach up.
+  {
+    files: ['src/shared/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/features/*', '@/app/*'],
+              message: 'shared code is used by features, so it cannot depend on them.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Features stand side by side, except for these one-way links: home -> route -> activities.
+  // Anything that needs two features at once goes in home or in app, never in a cycle.
+  {
+    files: ['src/features/activities/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['@/app/*'], message: 'features cannot depend on the app shell that wires them together.' },
+            {
+              group: ['@/features/route/*', '@/features/home/*'],
+              message: 'activities is used by route and home, so it cannot depend on them.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/features/route/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['@/app/*'], message: 'features cannot depend on the app shell that wires them together.' },
+            { group: ['@/features/home/*'], message: 'home is built from route, so route cannot depend on it.' },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/features/**/*.{ts,tsx}'],
+    ignores: ['src/features/activities/**', 'src/features/route/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['@/app/*'], message: 'features cannot depend on the app shell that wires them together.' },
+          ],
+        },
+      ],
+    },
+  },
 ])

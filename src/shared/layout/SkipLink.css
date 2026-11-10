@@ -1,0 +1,16 @@
+/* Hidden until a keyboard user tabs to it */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  padding: 10px 16px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 500;
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: none;
+}

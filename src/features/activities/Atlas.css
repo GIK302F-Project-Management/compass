@@ -1,0 +1,42 @@
+.search-form {
+  display: flex;
+  gap: 8px;
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  margin: 2.5rem auto 0;
+}
+.search-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Activities shown as an atlas: one map sheet per activity, in no fixed order */
+.atlas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-items: stretch;
+  gap: 28px 24px;
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  box-sizing: border-box;
+  margin: 2rem auto 3rem;
+  padding: 0;
+}
+.atlas-count,
+.atlas-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.atlas-count {
+  margin-bottom: -12px;
+}
+.sheet.due-soon {
+  box-shadow: 6px 6px 0 var(--accent);
+}
+.sheet.done {
+  opacity: 0.65;
+}
+.sheet-due {
+  margin: 0;
+  font-size: 15px;
+}

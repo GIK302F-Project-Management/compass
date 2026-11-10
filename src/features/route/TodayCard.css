@@ -1,0 +1,45 @@
+/* home page: what the saved route asks for today */
+.today-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: calc(100% - 32px);
+  max-width: 1040px;
+  box-sizing: border-box;
+  margin: 2.5rem auto 0;
+  padding: 18px 20px 20px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper-2);
+  box-shadow: 6px 6px 0 var(--accent);
+}
+.today-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+}
+.today-card-count {
+  font: 500 13px var(--mono);
+  color: var(--ink);
+}
+.today-card .stop-sessions {
+  margin: 4px 0 0;
+}
+.today-card .stop-sessions li {
+  background: var(--paper);
+}
+.today-card-note,
+.today-card-behind {
+  margin: 0;
+  font-size: 14px;
+}
+.today-card-behind {
+  color: var(--accent);
+}
+.today-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}

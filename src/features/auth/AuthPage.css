@@ -1,0 +1,86 @@
+/* Login and Register share one layout: a dark map panel next to the form */
+.auth-page {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+}
+.auth-aside {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: clamp(32px, 5vw, 64px);
+  background: var(--ink);
+  color: var(--paper);
+}
+.auth-aside .contours {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.auth-aside .contour {
+  stroke: color-mix(in srgb, var(--paper) 14%, transparent);
+}
+.auth-aside .contour-index {
+  stroke: color-mix(in srgb, var(--paper) 26%, transparent);
+}
+.auth-aside > :not(svg) {
+  position: relative;
+}
+.auth-aside h2 {
+  margin: 0;
+  max-width: 14ch;
+  font-size: clamp(34px, 4vw, 54px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--paper);
+}
+.auth-aside h2 em {
+  font-weight: 400;
+  color: var(--accent);
+}
+.auth-aside p {
+  max-width: 36ch;
+  color: color-mix(in srgb, var(--paper) 72%, transparent);
+}
+
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 5vw, 64px) 16px;
+}
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 420px;
+}
+.auth-card h1 {
+  margin: 0;
+  font-size: clamp(34px, 4vw, 46px);
+}
+.auth-switch,
+.auth-note {
+  font-size: 15px;
+}
+.auth-note {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 860px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+  .auth-aside {
+    padding: 28px 16px;
+  }
+  .auth-aside h2 {
+    font-size: 32px;
+  }
+}

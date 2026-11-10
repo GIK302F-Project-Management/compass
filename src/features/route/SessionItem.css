@@ -1,0 +1,58 @@
+.stop-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.stop-sessions li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--ink);
+  background: var(--paper-2);
+  transition: opacity 0.15s ease;
+}
+.stop-sessions input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+.stop-sessions label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  cursor: pointer;
+}
+.session-context {
+  font-size: 13px;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+.stop-sessions li.session-done {
+  opacity: 0.6;
+}
+.session-done .session-title {
+  text-decoration: line-through;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+.session-title {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.session-time {
+  font: 500 13px var(--mono);
+  color: var(--ink);
+}
+.stop-deadline {
+  margin: 8px 0 0;
+  font: 500 13px var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}

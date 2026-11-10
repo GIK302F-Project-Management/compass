@@ -1,0 +1,11 @@
+.sheet-map {
+  display: block;
+  width: 100%;
+  height: 96px;
+  border-bottom: 1.5px solid var(--ink);
+  background: var(--paper);
+}
+.sheet-map .route {
+  stroke-width: 2.5;
+  stroke-dasharray: 0.1 7;
+}

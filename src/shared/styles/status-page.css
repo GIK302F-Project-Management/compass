@@ -1,0 +1,18 @@
+/* Full-page message: "off the map" (404) and the error boundary */
+.status-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 720px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 48px 16px;
+}
+.status-page h1 {
+  margin: 0;
+  font-size: clamp(40px, 6vw, 72px);
+}

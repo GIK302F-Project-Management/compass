@@ -23,25 +23,69 @@ The app runs at http://localhost:5173.
 
 ## Scripts
 
-| Command           | Description                         |
-| ----------------- | ----------------------------------- |
-| `npm run dev`     | Start the development server        |
-| `npm run build`   | Type-check and build for production |
-| `npm run lint`    | Run ESLint                          |
-| `npm run preview` | Preview the production build        |
+| Command                | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `npm run dev`          | Start the development server                        |
+| `npm run build`        | Type-check and build for production                 |
+| `npm run typecheck`    | Type-check only                                     |
+| `npm run lint`         | Run ESLint                                          |
+| `npm run format`       | Format the code with Prettier                       |
+| `npm run format:check` | Check the formatting (used by CI)                   |
+| `npm test`             | Run the tests once (`npm run test:watch` to watch)  |
+| `npm run check`        | Everything CI runs: lint, format, tests, build      |
+| `npm run preview`      | Preview the production build                        |
+
+## Configuration
+
+The backend address defaults to `http://localhost:8080`. To change it, copy `.env.example` to `.env.local` and edit `VITE_API_URL`.
+
+## Authentication
+
+Logging in gives the page an access token from the backend. It is kept in `localStorage` (`compass.session`) and sent on every
+request as `Authorization: Bearer <token>`. Pages that need a login are wrapped in `RequireAuth`; `/login` and `/register` are
+wrapped in `GuestOnly`. A token the backend refuses, or one that expires, ends the session and shows the login page.
+
+`localStorage` is readable by any script running on the page, so the app must never render untrusted HTML. Tokens last two hours
+to limit the damage if one leaks.
 
 ## Project structure
 
+The code is grouped by what it is for (a feature), not by what kind of file it is. Everything one screen needs sits in one folder:
+its pages, components, styles, API calls, validation and tests.
+
 ```
 src/
-├── api/          # API clients (auth, http with token, session, study plan, activities, tasks)
-├── components/   # Reusable UI components (RouteGuards: login-protected routes)
-├── hooks/        # React hooks (useSession)
-├── mocks/        # Mock data used until the backend is connected
-├── pages/        # Route pages
-├── utils/        # Helpers
-└── validation/   # Form validation
+├── main.tsx            # Starts the app
+├── app/                # The shell that wires the features together: routes (App), error boundary, 404 page, design tokens
+├── features/
+│   ├── auth/           # Login, register, route guards (RequireAuth, GuestOnly)
+│   ├── activities/     # The atlas of activities (Atlas), an activity and its tasks (ActivityPage)
+│   ├── home/           # The page after login: the atlas plus the route card/trail. Built from activities and route
+│   ├── goals/          # Learning goals
+│   ├── plan/           # Quick plan (/plan): type goals and hours by hand, get a daily plan
+│   ├── route/          # AI route (/route): plan the tasks of your activities, plus the route widgets of the home page
+│   └── landing/        # Public landing page
+│   Each feature has: *Page.tsx and components with their .css, api/ (server calls), validation/ (form rules)
+├── shared/             # Used by several features. Never imports from features/ or app/ (enforced by ESLint)
+│   ├── api/            # fetch wrapper that adds the token, API address, the study-plans endpoint both planners use
+│   ├── hooks/          # useFormState, useDocumentTitle
+│   ├── layout/         # Header, navigation, skip link, logos: what every page is wrapped in
+│   ├── session/        # The login session kept in localStorage, and useSession
+│   ├── styles/         # CSS used by many screens (buttons, forms, sheets...)
+│   ├── ui/             # Generic pieces: form fields, icons, the map drawing shapes
+│   └── utils/          # Dates and durations
+└── test/               # Test setup and helpers
 ```
+
+Rules that keep this tidy:
+
+- Dependencies point one way: `app` -> `features` -> `shared`. ESLint fails the build if `shared` imports a feature, or a feature imports `app`.
+- Between features there is one chain, `home` -> `route` -> `activities`, also enforced by ESLint. Code that needs two features at once goes in `home` (or `app`), never in a cycle.
+- One definition per thing: `POST /api/study-plans` is called by `generateStudyPlan` in `shared/api/studyPlans.ts` (both planners use it), and durations are formatted by `formatMinutes` in `shared/utils/duration.ts` ("2h 15m").
+- Inside a feature use relative imports. Across folders use the `@/` alias, which means `src/` (for example `@/shared/ui/FormField`).
+- Tests sit next to the code as `*.test.ts[x]`. Each component has its stylesheet next to it, with the same name.
+- Activities and tasks are kept in `localStorage` (`features/activities/api/activityStore.ts` and `taskStore.ts`) until the backend has endpoints for them.
+  Only the files in that `api/` folder know about it, so switching to the backend changes one place.
 
 ## Workflow
 

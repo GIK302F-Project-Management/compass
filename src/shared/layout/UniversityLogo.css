@@ -1,0 +1,30 @@
+.university-mark {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 18px;
+  border-left: 1.5px solid var(--line);
+}
+.university-logo {
+  display: block;
+  height: 38px;
+  width: auto;
+}
+
+/* The logo's dark lettering needs a light background, so on the night map it sits on a paper plate. */
+@media (prefers-color-scheme: dark) {
+  .university-mark {
+    padding: 5px 10px;
+    border-left: 0;
+    border-radius: 2px;
+    background: #f2ecdf;
+  }
+  .university-logo {
+    height: 32px;
+  }
+}
+
+@media (max-width: 560px) {
+  .university-logo {
+    height: 26px;
+  }
+}

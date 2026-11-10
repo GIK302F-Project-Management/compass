@@ -1,0 +1,52 @@
+/* The drawing vocabulary of the map: contour lines, route, waypoints, flag, labels, compass rose.
+   Imported by every component that draws with MapShapes, so the rules below load before theirs. */
+.contour {
+  fill: none;
+  stroke: var(--contour);
+  stroke-width: 1.2;
+}
+.contour-index {
+  stroke: var(--line);
+  stroke-width: 1.6;
+}
+.route {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 10;
+}
+.waypoint {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.waypoint-start {
+  fill: var(--accent);
+  stroke: none;
+}
+.map-flag {
+  fill: var(--accent);
+}
+.map-pole {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.map-label {
+  font: 500 12px var(--mono);
+  letter-spacing: 0.04em;
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--paper-2);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+.rose-group {
+  transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rose-group {
+    transition: none;
+  }
+}
