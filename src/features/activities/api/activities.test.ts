@@ -4,25 +4,45 @@ import {
   createActivity,
   deleteActivity,
   getActivity,
+  isShared,
   listActivities,
   setActivityDone,
   updateActivity,
 } from './activities'
 
-const ACTIVITY = { id: 3, planId: 1, title: 'Read chapter 4', subject: 'Physics', dueDate: '2026-12-01', done: false }
-const EXPECTED = { ...ACTIVITY, id: '3', planId: '1', doneBy: null }
+const ACTIVITY = {
+  id: 3,
+  ownerId: 1,
+  role: 'OWNER',
+  memberCount: 1,
+  title: 'Read chapter 4',
+  subject: 'Physics',
+  dueDate: '2026-12-01',
+  done: false,
+}
+const EXPECTED = { ...ACTIVITY, id: '3', ownerId: '1', doneBy: null }
 
 const urlOf = (fetchMock: ReturnType<typeof stubFetch>, call = 0) =>
   String(fetchMock.mock.calls[call]![0]).replace(/^https?:\/\/[^/]+/, '')
 
 describe('activities', () => {
-  it('lists the activities of a plan', async () => {
-    const fetchMock = stubFetch(jsonResponse([ACTIVITY, { ...ACTIVITY, id: 4, done: true, doneBy: 2 }]))
+  it("lists the whole atlas: the student's own activities and the shared ones", async () => {
+    const shared = { ...ACTIVITY, id: 4, ownerId: 2, role: 'MEMBER', memberCount: 3, done: true, doneBy: 2 }
+    const fetchMock = stubFetch(jsonResponse([ACTIVITY, shared]))
 
-    const activities = await listActivities('1')
+    const activities = await listActivities()
 
-    expect(urlOf(fetchMock)).toBe('/plans/1/activities')
-    expect(activities).toEqual([EXPECTED, { ...EXPECTED, id: '4', done: true, doneBy: '2' }])
+    expect(urlOf(fetchMock)).toBe('/activities')
+    expect(activities).toEqual([
+      EXPECTED,
+      { ...EXPECTED, id: '4', ownerId: '2', role: 'MEMBER', memberCount: 3, done: true, doneBy: '2' },
+    ])
+    expect(activities.map(isShared)).toEqual([false, true])
+  })
+
+  it('refuses an activity with an unknown role', async () => {
+    stubFetch(jsonResponse([{ ...ACTIVITY, role: 'BOSS' }]))
+    await expect(listActivities()).rejects.toThrow(/unknown role/)
   })
 
   it('gives null for an activity that is not there, and throws for other failures', async () => {
@@ -32,13 +52,13 @@ describe('activities', () => {
     await expect(getActivity('9')).rejects.toThrow(/500/)
   })
 
-  it('creates an activity in a plan with trimmed texts', async () => {
+  it('creates an activity in the atlas with trimmed texts', async () => {
     const fetchMock = stubFetch(jsonResponse(ACTIVITY, 201))
 
-    expect(
-      await createActivity('1', { title: ' Read chapter 4 ', subject: ' Physics', dueDate: '2026-12-01' }),
-    ).toEqual(EXPECTED)
-    expect(urlOf(fetchMock)).toBe('/plans/1/activities')
+    expect(await createActivity({ title: ' Read chapter 4 ', subject: ' Physics', dueDate: '2026-12-01' })).toEqual(
+      EXPECTED,
+    )
+    expect(urlOf(fetchMock)).toBe('/activities')
     expect(sentBody(fetchMock)).toEqual({ title: 'Read chapter 4', subject: 'Physics', dueDate: '2026-12-01' })
   })
 

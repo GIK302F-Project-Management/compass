@@ -1,0 +1,45 @@
+/* How a metric is doing, in color: good (green), tight (amber), bad (red).
+   Used by the progress cards on the home page and the status of each sheet in the atlas. */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font: 600 11px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.status-badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.status-badge.level-good {
+  color: var(--good);
+  background: var(--good-bg);
+}
+.status-badge.level-tight {
+  color: var(--tight);
+  background: var(--tight-bg);
+}
+.status-badge.level-bad {
+  color: var(--bad);
+  background: var(--bad-bg);
+}
+
+/* A bar filled in the color of its level */
+.progress-track.level-good span {
+  background: var(--good);
+}
+.progress-track.level-tight span {
+  background: var(--tight);
+}
+.progress-track.level-bad span {
+  background: var(--bad);
+}

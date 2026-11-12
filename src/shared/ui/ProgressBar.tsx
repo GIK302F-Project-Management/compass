@@ -3,14 +3,15 @@ type ProgressBarProps = {
   max: number
   label: string // what the bar measures, for screen readers: "Tasks done"
   valueText?: string // the value in words, when "3 of 10" reads better than "30"
+  level?: 'good' | 'tight' | 'bad' // fills the bar in the color of how it is doing (see levels.css)
 }
 
 // A bar that fills as work gets done. An empty goal (max 0) shows an empty bar instead of dividing by zero.
-export function ProgressBar({ value, max, label, valueText }: ProgressBarProps) {
+export function ProgressBar({ value, max, label, valueText, level }: ProgressBarProps) {
   const percent = max > 0 ? Math.min(100, (value / max) * 100) : 0
   return (
     <div
-      className="progress-track"
+      className={level ? `progress-track level-${level}` : 'progress-track'}
       role="progressbar"
       aria-label={label}
       aria-valuemin={0}

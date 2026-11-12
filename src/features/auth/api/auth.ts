@@ -77,10 +77,17 @@ function toSession(body: unknown): Session {
     typeof body.token === 'string' &&
     typeof body.expiresAt === 'string' &&
     isRecord(body.user) &&
+    (typeof body.user.id === 'number' || typeof body.user.id === 'string') &&
     typeof body.user.name === 'string' &&
     typeof body.user.email === 'string'
   ) {
-    return { token: body.token, expiresAt: body.expiresAt, name: body.user.name, email: body.user.email }
+    return {
+      token: body.token,
+      expiresAt: body.expiresAt,
+      userId: String(body.user.id),
+      name: body.user.name,
+      email: body.user.email,
+    }
   }
   throw new Error('Unexpected login response: missing token or user')
 }

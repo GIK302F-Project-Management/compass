@@ -1,17 +1,11 @@
 import { useEffect, useState } from 'react'
-import {
-  createInvitation,
-  invitationLink,
-  listInvitations,
-  revokeInvitation,
-  type Invitation,
-} from '@/shared/api/plans'
+import { createInvitation, invitationLink, listInvitations, revokeInvitation, type Invitation } from './api/sharing'
 import './InvitationsPanel.css'
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' })
 
 // The owner's tools to bring people in: make an invitation link, copy it, take it back.
-export function InvitationsPanel({ planId }: { planId: string }) {
+export function InvitationsPanel({ activityId }: { activityId: string }) {
   const [invitations, setInvitations] = useState<Invitation[]>([])
   const [loading, setLoading] = useState(true)
   const [problem, setProblem] = useState('')
@@ -19,7 +13,7 @@ export function InvitationsPanel({ planId }: { planId: string }) {
 
   useEffect(() => {
     let cancelled = false
-    listInvitations(planId)
+    listInvitations(activityId)
       .then((loaded) => {
         if (!cancelled) setInvitations(loaded)
       })
@@ -32,12 +26,12 @@ export function InvitationsPanel({ planId }: { planId: string }) {
     return () => {
       cancelled = true
     }
-  }, [planId])
+  }, [activityId])
 
   async function handleCreate() {
     setProblem('')
     try {
-      const created = await createInvitation(planId)
+      const created = await createInvitation(activityId)
       setInvitations((current) => [created, ...current])
     } catch {
       setProblem('Could not create an invitation link. Please try again.')
@@ -48,7 +42,7 @@ export function InvitationsPanel({ planId }: { planId: string }) {
     if (!window.confirm('Revoke this link? Nobody will be able to join with it anymore.')) return
     setProblem('')
     try {
-      await revokeInvitation(planId, invitation.id)
+      await revokeInvitation(activityId, invitation.id)
       setInvitations((current) => current.filter((item) => item.id !== invitation.id))
     } catch {
       setProblem('Could not revoke the link. Please try again.')
@@ -69,8 +63,8 @@ export function InvitationsPanel({ planId }: { planId: string }) {
     <section className="invitations" aria-labelledby="invitations-heading">
       <h3 id="invitations-heading">Invite students</h3>
       <p>
-        Send an invitation link to a classmate. They log in, open the link and join the plan. Each link works for a
-        week, and you can revoke it at any time.
+        Send an invitation link to a classmate. They log in, open the link, and this activity shows up in their atlas,
+        with the same list of tasks. Each link works for a week, and you can revoke it at any time.
       </p>
 
       {problem && (

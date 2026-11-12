@@ -1,7 +1,6 @@
-/* Text controls: every input, textarea and the search box share one look */
+/* Text controls: every input and textarea share one look */
 .form-field input,
-.form-field textarea,
-.search-input {
+.form-field textarea {
   padding: 12px 14px;
   border: 1.5px solid var(--ink);
   border-radius: 2px;
@@ -11,8 +10,7 @@
   transition: box-shadow 0.12s ease;
 }
 .form-field input:focus,
-.form-field textarea:focus,
-.search-input:focus {
+.form-field textarea:focus {
   outline: none;
   box-shadow: 4px 4px 0 var(--accent);
 }

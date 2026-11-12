@@ -4,10 +4,10 @@ import * as tasksApi from '@/features/activities/api/tasks'
 import { saveRoute, type SavedRoute } from './api/savedRoute'
 import { useRouteProgress } from './useRouteProgress'
 
-vi.mock('@/features/activities/api/tasks', () => ({ listPlanTasks: vi.fn(), updateTask: vi.fn() }))
+vi.mock('@/features/activities/api/tasks', () => ({ listAtlasTasks: vi.fn(), updateTask: vi.fn() }))
 
-const listPlanTasks = vi.mocked(tasksApi.listPlanTasks)
-const SCOPE = { ownerEmail: 'ana@alumni.mondragon.edu', planId: '1' }
+const listAtlasTasks = vi.mocked(tasksApi.listAtlasTasks)
+const SCOPE = { ownerEmail: 'ana@alumni.mondragon.edu' }
 
 const ROUTE: SavedRoute = {
   source: 'llm',
@@ -30,16 +30,16 @@ beforeEach(() => {
 })
 
 describe('useRouteProgress', () => {
-  it('reports that there is no route when none was saved for the plan', () => {
+  it('reports that there is no route when none was saved', () => {
     const { result } = renderHook(() => useRouteProgress(SCOPE))
 
     expect(result.current.status).toBe('none')
-    expect(listPlanTasks).not.toHaveBeenCalled()
+    expect(listAtlasTasks).not.toHaveBeenCalled()
   })
 
   it('reports a failed load instead of hiding the route, and loads it again on retry', async () => {
     saveRoute(SCOPE, ROUTE)
-    listPlanTasks.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce([])
+    listAtlasTasks.mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce([])
 
     const { result } = renderHook(() => useRouteProgress(SCOPE))
     expect(result.current.status).toBe('loading')
@@ -48,6 +48,6 @@ describe('useRouteProgress', () => {
     act(() => result.current.retry())
 
     await waitFor(() => expect(result.current.status).toBe('ready'))
-    expect(listPlanTasks).toHaveBeenCalledTimes(2)
+    expect(listAtlasTasks).toHaveBeenCalledTimes(2)
   })
 })

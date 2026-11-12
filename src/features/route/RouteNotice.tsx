@@ -5,20 +5,17 @@ import './RouteNotice.css'
 type RouteNoticeProps = {
   status: Exclude<RouteStatus, 'ready'>
   onRetry: () => void
-  // trail: the side column on wide screens; card: above the atlas on small screens
-  variant: 'trail' | 'card'
 }
 
-// Keeps the route's place on the home page when there is no route to show: none yet, still loading,
-// or it could not be loaded. So the page always says where the student stands with their route.
-export function RouteNotice({ status, onRetry, variant }: RouteNoticeProps) {
-  // A loading line on top of a phone screen only flickers; the side column keeps its place instead.
-  if (status === 'loading' && variant === 'card') return null
+// Keeps the place of today's card on the home page when there is no route to show: none yet, or it could not be
+// loaded. So the page always says where the student stands with their route.
+export function RouteNotice({ status, onRetry }: RouteNoticeProps) {
+  // A loading line above the atlas would only flicker for a moment.
+  if (status === 'loading') return null
 
-  const className = `route-notice ${variant === 'trail' ? 'route-trail' : 'today-card'}`
   return (
-    <section className={className} aria-labelledby={`route-notice-${variant}`}>
-      <p className="kicker" id={`route-notice-${variant}`}>
+    <section className="route-notice today-card" aria-labelledby="route-notice-heading">
+      <p className="kicker" id="route-notice-heading">
         Your route
       </p>
 
@@ -45,8 +42,6 @@ export function RouteNotice({ status, onRetry, variant }: RouteNoticeProps) {
           </button>
         </>
       )}
-
-      {status === 'loading' && <p className="route-notice-text">Loading your route…</p>}
     </section>
   )
 }

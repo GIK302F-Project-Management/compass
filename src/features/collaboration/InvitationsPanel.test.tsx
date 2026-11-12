@@ -1,19 +1,19 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import * as plansApi from '@/shared/api/plans'
+import * as sharingApi from './api/sharing'
 import { InvitationsPanel } from './InvitationsPanel'
 
-vi.mock('@/shared/api/plans', () => ({
+vi.mock('./api/sharing', () => ({
   listInvitations: vi.fn(),
   createInvitation: vi.fn(),
   revokeInvitation: vi.fn(),
   invitationLink: (token: string) => `http://app/join/${token}`,
 }))
 
-const listInvitations = vi.mocked(plansApi.listInvitations)
-const createInvitation = vi.mocked(plansApi.createInvitation)
-const revokeInvitation = vi.mocked(plansApi.revokeInvitation)
+const listInvitations = vi.mocked(sharingApi.listInvitations)
+const createInvitation = vi.mocked(sharingApi.createInvitation)
+const revokeInvitation = vi.mocked(sharingApi.revokeInvitation)
 
 const INVITATION = { id: '5', token: 'tok5', createdAt: '2026-11-03T10:00:00Z', expiresAt: '2026-11-10T10:00:00Z' }
 
@@ -25,7 +25,7 @@ beforeEach(() => {
 describe('InvitationsPanel', () => {
   it('shows the links that still work', async () => {
     listInvitations.mockResolvedValue([INVITATION])
-    render(<InvitationsPanel planId="2" />)
+    render(<InvitationsPanel activityId="2" />)
 
     expect(await screen.findByLabelText('Invitation link')).toHaveValue('http://app/join/tok5')
     expect(listInvitations).toHaveBeenCalledWith('2')
@@ -33,7 +33,7 @@ describe('InvitationsPanel', () => {
 
   it('says when there are none', async () => {
     listInvitations.mockResolvedValue([])
-    render(<InvitationsPanel planId="2" />)
+    render(<InvitationsPanel activityId="2" />)
 
     expect(await screen.findByText('No active links.')).toBeInTheDocument()
   })
@@ -41,7 +41,7 @@ describe('InvitationsPanel', () => {
   it('creates a link and shows it first', async () => {
     listInvitations.mockResolvedValue([INVITATION])
     createInvitation.mockResolvedValue({ ...INVITATION, id: '6', token: 'tok6' })
-    render(<InvitationsPanel planId="2" />)
+    render(<InvitationsPanel activityId="2" />)
     await screen.findByLabelText('Invitation link')
 
     await userEvent.click(screen.getByRole('button', { name: 'Create invitation link' }))
@@ -57,7 +57,7 @@ describe('InvitationsPanel', () => {
     listInvitations.mockResolvedValue([INVITATION])
     const writeText = vi.fn().mockResolvedValue(undefined)
     vi.stubGlobal('navigator', { clipboard: { writeText } })
-    render(<InvitationsPanel planId="2" />)
+    render(<InvitationsPanel activityId="2" />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Copy link' }))
 
@@ -68,7 +68,7 @@ describe('InvitationsPanel', () => {
   it('revokes a link after asking', async () => {
     listInvitations.mockResolvedValue([INVITATION])
     revokeInvitation.mockResolvedValue(undefined)
-    render(<InvitationsPanel planId="2" />)
+    render(<InvitationsPanel activityId="2" />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Revoke' }))
 
@@ -79,7 +79,7 @@ describe('InvitationsPanel', () => {
   it('keeps the link when the revoke fails', async () => {
     listInvitations.mockResolvedValue([INVITATION])
     revokeInvitation.mockRejectedValue(new Error('offline'))
-    render(<InvitationsPanel planId="2" />)
+    render(<InvitationsPanel activityId="2" />)
 
     await userEvent.click(await screen.findByRole('button', { name: 'Revoke' }))
 

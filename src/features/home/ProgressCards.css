@@ -1,0 +1,98 @@
+/* The metric cards at the top of the home page. The left edge takes the color of how the metric is doing. */
+.progress-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin: 2rem 0 1.5rem;
+}
+.progress-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1.5px solid var(--ink);
+  border-left-width: 8px;
+  background: var(--paper-2);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.progress-card.level-good {
+  border-left-color: var(--good);
+}
+.progress-card.level-tight {
+  border-left-color: var(--tight);
+}
+.progress-card.level-bad {
+  border-left-color: var(--bad);
+  background: linear-gradient(var(--bad-bg), var(--bad-bg)), var(--paper-2);
+}
+.progress-card p {
+  margin: 0;
+}
+.progress-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.progress-card-head h2 {
+  margin: 0;
+}
+.progress-card-headline {
+  font: 600 26px/1.15 var(--serif);
+  color: var(--ink);
+}
+.progress-card.level-good .progress-card-headline {
+  color: var(--good);
+}
+.progress-card.level-tight .progress-card-headline {
+  color: var(--tight);
+}
+.progress-card.level-bad .progress-card-headline {
+  color: var(--bad);
+}
+.progress-card-text {
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* The route bar, with a mark where the route expected the student to be by today */
+.pace-bar {
+  position: relative;
+  width: 100%;
+}
+.pace-mark {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--ink);
+}
+
+.deadline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.deadline-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 10px;
+}
+.deadline-title {
+  font: 600 18px var(--serif);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.deadline-numbers {
+  grid-column: 2;
+  font: 500 12px var(--mono);
+  color: var(--ink-soft);
+}

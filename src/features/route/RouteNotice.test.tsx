@@ -14,7 +14,7 @@ function renderNotice(props: Parameters<typeof RouteNotice>[0]) {
 
 describe('RouteNotice', () => {
   it('invites the student to plot a route when there is none', () => {
-    renderNotice({ status: 'none', onRetry: vi.fn(), variant: 'trail' })
+    renderNotice({ status: 'none', onRetry: vi.fn() })
 
     expect(screen.getByText('You don’t have a route yet.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Plot my route' })).toHaveAttribute('href', '/planner?new=1')
@@ -22,7 +22,7 @@ describe('RouteNotice', () => {
 
   it('offers to try again when the route could not be loaded', async () => {
     const onRetry = vi.fn()
-    renderNotice({ status: 'failed', onRetry, variant: 'card' })
+    renderNotice({ status: 'failed', onRetry })
 
     expect(screen.getByRole('alert')).toHaveTextContent('Could not load your route.')
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }))
@@ -30,15 +30,9 @@ describe('RouteNotice', () => {
     expect(onRetry).toHaveBeenCalledOnce()
   })
 
-  it('keeps the side column while loading, but shows nothing above the atlas on small screens', () => {
-    const { rerender } = renderNotice({ status: 'loading', onRetry: vi.fn(), variant: 'trail' })
-    expect(screen.getByText('Loading your route…')).toBeInTheDocument()
+  it('shows nothing while the route loads, so the page does not flicker', () => {
+    const { container } = renderNotice({ status: 'loading', onRetry: vi.fn() })
 
-    rerender(
-      <MemoryRouter>
-        <RouteNotice status="loading" onRetry={vi.fn()} variant="card" />
-      </MemoryRouter>,
-    )
-    expect(screen.queryByText('Loading your route…')).not.toBeInTheDocument()
+    expect(container).toBeEmptyDOMElement()
   })
 })

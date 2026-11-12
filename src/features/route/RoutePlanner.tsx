@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { listActivities, type Activity } from '@/features/activities/api/activities'
-import type { Plan } from '@/shared/api/plans'
-import { useActivePlan } from '@/shared/plans/useCurrentPlan'
 import {
   generateStudyPlan,
   type PlanFailure,
@@ -13,7 +11,7 @@ import {
 import { getSession } from '@/shared/session/session'
 import { loadRoute, parseWarning, saveRoute, type GoalInfo, type RouteScope, type SavedRoute } from './api/savedRoute'
 import { isSessionDone, toggleSession } from './api/routeProgress'
-import { listPlanTasks, updateTask, type Task } from '@/features/activities/api/tasks'
+import { assignedTo, listAtlasTasks, updateTask, type Task } from '@/features/activities/api/tasks'
 import { ContourHill } from '@/shared/ui/MapShapes'
 import { SessionItem } from './SessionItem'
 import { daysBetween, formatDueDate, todayIso } from '@/shared/utils/dates'
@@ -76,20 +74,13 @@ function preferenceLines(preferences: string) {
     .filter(Boolean)
 }
 
-function sheetLabel(index: number) {
-  return index < 0 ? '··' : String(index + 1).padStart(2, '0')
-}
-
-// The route is made for one plan, so switching plans starts the page over (hence the key).
+// One route per student, made of the tasks assigned to them across their whole atlas (their own activities and
+// the shared ones). Tasks of a shared activity that nobody took yet can be taken from here.
 export function RoutePlanner() {
-  const plan = useActivePlan()
-  return <RoutePlannerForPlan key={plan.id} plan={plan} />
-}
-
-function RoutePlannerForPlan({ plan }: { plan: Plan }) {
   const [session] = useState(getSession)
   const ownerEmail = session?.email ?? ''
-  const scope: RouteScope = { ownerEmail, planId: plan.id }
+  const userId = session?.userId ?? ''
+  const scope: RouteScope = { ownerEmail }
   const [searchParams] = useSearchParams()
   const focusActivityId = searchParams.get('activity')
   // ?new=1 opens the briefing even when a route is saved ("Plot a new route").
@@ -113,14 +104,14 @@ function RoutePlannerForPlan({ plan }: { plan: Plan }) {
 
   useEffect(() => {
     if (!ownerEmail) return
-    Promise.all([listActivities(plan.id), listPlanTasks(plan.id)])
+    Promise.all([listActivities(), listAtlasTasks()])
       .then(([foundActivities, foundTasks]) => {
         setActivities(foundActivities)
         setTasks(foundTasks)
 
         const activityById = new Map(foundActivities.map((activity) => [activity.id, activity]))
         const initial: Record<string, Pick> = {}
-        for (const task of foundTasks) {
+        for (const task of assignedTo(foundTasks, userId)) {
           const activity = activityById.get(task.activityId)
           if (!activity || task.done || activity.done) continue
           const reachable = unreachableReason(taskDeadline(task, activity), todayIso()) === null
@@ -131,9 +122,9 @@ function RoutePlannerForPlan({ plan }: { plan: Plan }) {
         }
         setPicks(initial)
       })
-      .catch(() => setError('Could not load the tasks of this plan. Refresh the page to try again.'))
+      .catch(() => setError('Could not load your tasks. Refresh the page to try again.'))
       .finally(() => setLoading(false))
-  }, [ownerEmail, plan.id, focusActivityId])
+  }, [ownerEmail, userId, focusActivityId])
 
   // Stop waiting for the AI if the user leaves the page.
   useEffect(() => () => abortRef.current?.abort(), [])
@@ -156,16 +147,29 @@ function RoutePlannerForPlan({ plan }: { plan: Plan }) {
     )
   }
 
-  const sheetIndex = new Map(activities.map((activity, index) => [activity.id, index]))
   const activityById = new Map(activities.map((activity) => [activity.id, activity]))
   const taskById = new Map(tasks.map((task) => [task.id, task]))
   const plannable = activities.filter((activity) => !activity.done)
-  const pendingTasksOf = (activityId: string) => tasks.filter((task) => task.activityId === activityId && !task.done)
+  const myTasks = assignedTo(tasks, userId)
+  // Only the student's own tasks go into their route; the ones nobody took yet are offered to take.
+  const pendingTasksOf = (activityId: string) => myTasks.filter((task) => task.activityId === activityId && !task.done)
+  const unassignedOf = (activityId: string) =>
+    tasks.filter((task) => task.activityId === activityId && !task.done && task.assigneeId === null)
   const isReachable = (task: Task) => {
     const activity = activityById.get(task.activityId)
     return !!activity && unreachableReason(taskDeadline(task, activity), startDate) === null
   }
-  const selectedTasks = tasks.filter((task) => picks[task.id]?.selected && isReachable(task))
+  const selectedTasks = myTasks.filter((task) => picks[task.id]?.selected && isReachable(task))
+
+  async function take(task: Task) {
+    try {
+      const updated = await updateTask(task.id, { assigneeId: userId })
+      setTasks((current) => current.map((item) => (item.id === updated.id ? updated : item)))
+      updatePick(updated.id, { selected: isReachable(updated), hours: estimateToHours(updated.estimatedMinutes) })
+    } catch {
+      setError(`Could not take "${task.title}". Please try again.`)
+    }
+  }
 
   function updatePick(id: string, change: Partial<Pick>) {
     setPicks((current) => ({ ...current, [id]: { ...(current[id] ?? NO_PICK), ...change } }))
@@ -368,8 +372,8 @@ function RoutePlannerForPlan({ plan }: { plan: Plan }) {
             Where are you <em>heading?</em>
           </h2>
           <p>
-            Pick the tasks to plan from every activity, check how long each one needs, and the AI will mix them into one
-            day-by-day route.
+            Pick your tasks to plan from every activity, check how long each one needs, and the AI will mix them into
+            one day-by-day route.
           </p>
         </header>
 
@@ -453,6 +457,7 @@ function RoutePlannerForPlan({ plan }: { plan: Plan }) {
             )}
             {plannable.map((activity) => {
               const pending = pendingTasksOf(activity.id)
+              const unassigned = unassignedOf(activity.id)
               const reachable = pending.filter(isReachable)
               const allPicked = reachable.length > 0 && reachable.every((task) => picks[task.id]?.selected)
               return (
@@ -467,17 +472,14 @@ function RoutePlannerForPlan({ plan }: { plan: Plan }) {
                       aria-label={`Select all tasks of ${activity.title}`}
                     />
                     <label htmlFor={`group-${activity.id}`}>
-                      <span className="kicker">
-                        Sheet {sheetLabel(sheetIndex.get(activity.id) ?? -1)}
-                        {activity.subject && ` · ${activity.subject}`}
-                      </span>
+                      {activity.subject && <span className="kicker">{activity.subject}</span>}
                       <span className="dest-group-title">{activity.title}</span>
                     </label>
                     <span className="destination-due">Due {formatDueDate(activity.dueDate)}</span>
                   </div>
-                  {pending.length === 0 && (
+                  {pending.length === 0 && unassigned.length === 0 && (
                     <p className="dest-empty">
-                      No open tasks.{' '}
+                      No open tasks for you.{' '}
                       <Link to={`/activity/${activity.id}`} className="text-link">
                         Add tasks
                       </Link>{' '}
@@ -524,6 +526,20 @@ function RoutePlannerForPlan({ plan }: { plan: Plan }) {
                       </div>
                     )
                   })}
+                  {unassigned.length > 0 && (
+                    <ul className="dest-unassigned" aria-label={`Tasks of ${activity.title} that nobody took yet`}>
+                      {unassigned.map((task) => (
+                        <li key={task.id}>
+                          <span>
+                            <span className="kicker">Nobody yet</span> {task.title}
+                          </span>
+                          <button type="button" className="button button-small" onClick={() => take(task)}>
+                            Take it
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </section>
               )
             })}

@@ -430,3 +430,25 @@
 @media (prefers-reduced-motion: reduce) {
   .plotting-route{ animation: none; }
 }
+/* Tasks of a shared activity that nobody took yet: taking one adds it to the list above */
+.dest-unassigned {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 14px 14px 30px;
+  padding: 0;
+  list-style: none;
+}
+.dest-unassigned li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  border: 1.5px dashed var(--line);
+  color: var(--ink-soft);
+}
+.dest-unassigned .kicker {
+  margin-right: 6px;
+  color: var(--accent);
+}

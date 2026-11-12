@@ -1,30 +1,37 @@
-/* home page layout: atlas on the left, route trail on the right (wide screens only) */
+/* home page layout: the progress cards and the atlas, with today's sticky note beside them on wide screens
+   (and above the atlas on narrow ones) */
 .home-layout {
   width: calc(100% - 32px);
   max-width: 1040px;
   margin: 0 auto;
 }
-.home-layout .search-form,
 .home-layout .atlas,
 .home-layout .today-card {
   width: 100%;
   max-width: none;
 }
-.route-trail {
-  display: none;
+.home-side .today-card {
+  margin-top: 1.5rem;
 }
 @media (min-width: 1100px) {
-  .home-layout.with-trail {
+  .home-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 340px;
+    grid-template-areas: 'main side';
     align-items: start;
-    gap: 40px;
+    gap: 44px;
     max-width: 1440px;
   }
-  .with-trail .today-card {
-    display: none;
+  .home-main {
+    grid-area: main;
   }
-  .with-trail .route-trail {
-    display: flex;
+  .home-side {
+    grid-area: side;
+    position: sticky;
+    top: 24px;
+    padding-top: 2rem;
+  }
+  .home-side .today-card {
+    margin-top: 0;
   }
 }

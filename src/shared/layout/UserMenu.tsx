@@ -17,9 +17,9 @@ export function UserMenu() {
   // Ending the session is enough: the protected routes see it and send the student to the login page.
   return (
     <>
-      <span className="user-name" title={session.email}>
+      <Link to="/profile" className="user-name" title={`${session.email} · Your profile`}>
         {session.name}
-      </span>
+      </Link>
       <button type="button" className="button button-small" onClick={() => endSession('logout')}>
         Log out
       </button>

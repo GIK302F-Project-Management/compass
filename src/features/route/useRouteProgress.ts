@@ -1,18 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
 import { isSessionDone, toggleSession } from './api/routeProgress'
 import { loadRoute, type RouteScope } from './api/savedRoute'
-import { listPlanTasks, type Task } from '@/features/activities/api/tasks'
+import { listAtlasTasks, type Task } from '@/features/activities/api/tasks'
 
 // Where the home page stands with the route:
-// none    -> no route saved for this plan yet
+// none    -> no route saved yet
 // loading -> a route is saved and its tasks are being fetched
 // failed  -> the tasks could not be fetched (the page offers to try again)
 // ready   -> the route and its tasks are there
 export type RouteStatus = 'none' | 'loading' | 'failed' | 'ready'
 
 // The saved route plus the tasks it schedules, for pages that show the route's progress
-// (the home page trail and card). Ticking a session here updates both the route and the task.
-export function useRouteProgress(scope: RouteScope) {
+// (the home page trail and card). Ticking a session here updates both the route and the task;
+// `onTaskChanged` hears about the task, so the rest of the page can follow.
+export function useRouteProgress(scope: RouteScope, onTaskChanged?: (task: Task) => void) {
   const [route, setRoute] = useState(() => (scope.ownerEmail ? loadRoute(scope) : null))
   const [tasks, setTasks] = useState<Task[] | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
@@ -21,7 +22,7 @@ export function useRouteProgress(scope: RouteScope) {
 
   useEffect(() => {
     if (!route) return
-    listPlanTasks(scope.planId)
+    listAtlasTasks()
       .then(setTasks)
       .catch(() => setLoadFailed(true))
     // Fetch again when a new route is plotted (new createdAt) or the student asks to try again.
@@ -41,7 +42,10 @@ export function useRouteProgress(scope: RouteScope) {
       const result = await toggleSession(scope, route, index, taskById)
       setRoute(result.route)
       const updated = result.task
-      if (updated) setTasks((current) => current?.map((task) => (task.id === updated.id ? updated : task)) ?? null)
+      if (updated) {
+        setTasks((current) => current?.map((task) => (task.id === updated.id ? updated : task)) ?? null)
+        onTaskChanged?.(updated)
+      }
       setProblem(null)
     } catch {
       setProblem('Could not save that change. Please try again.')

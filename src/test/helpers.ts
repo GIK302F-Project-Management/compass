@@ -6,6 +6,7 @@ export function makeSession(overrides: Partial<Session> = {}): Session {
   return {
     token: 'token-abc',
     expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    userId: '1',
     name: 'Ana',
     email: 'ana@alumni.mondragon.edu',
     ...overrides,

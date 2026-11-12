@@ -1,39 +1,46 @@
-import { PlanSummaryStrip } from '@/features/collaboration/PlanSummaryStrip'
+import { useMemo } from 'react'
 import { Atlas } from '@/features/activities/Atlas'
+import { deadlineStatuses } from '@/features/activities/deadlines'
+import { useAtlas } from '@/features/activities/useAtlas'
 import { RouteNotice } from '@/features/route/RouteNotice'
-import { RouteTrail } from '@/features/route/RouteTrail'
 import { TodayCard } from '@/features/route/TodayCard'
 import { useRouteProgress } from '@/features/route/useRouteProgress'
 import { AppHeader } from '@/shared/layout/AppHeader'
 import { Main } from '@/shared/layout/Main'
-import { useActivePlan } from '@/shared/plans/useCurrentPlan'
-import type { Plan } from '@/shared/api/plans'
 import { useSession } from '@/shared/session/useSession'
+import { todayIso } from '@/shared/utils/dates'
+import { ProgressCards } from './ProgressCards'
 import './HomePage.css'
 
-// The landing page after login. It brings two features together: the atlas of activities (activities)
-// and what the saved route asks for (route), as a card on small screens and a trail on wide ones.
+// Without a route, deadlines are checked at the planner's default pace.
+const DEFAULT_DAILY_MINUTES = 120
+
+// The landing page after login. It brings the features together: how the student is doing (the progress cards),
+// their one atlas of activities, and what the route asks for today, on a sticky note beside them. The whole route
+// lives in the planner.
 export function HomePage() {
-  const plan = useActivePlan()
-  // The route is made for one plan, so switching plans starts the page over (hence the key).
-  return <Home key={plan.id} plan={plan} />
-}
-
-function Home({ plan }: { plan: Plan }) {
   const session = useSession()
-  const progress = useRouteProgress({ ownerEmail: session?.email ?? '', planId: plan.id })
+  const atlas = useAtlas()
+  const progress = useRouteProgress({ ownerEmail: session?.email ?? '' }, atlas.replaceTask)
   const route = progress.route
+  const ready = !!route && progress.status === 'ready'
 
-  // The route always has its place: the route itself once its tasks have loaded, otherwise a notice
-  // (no route yet, loading, or could not load).
+  const dailyMinutes = route?.request.dailyAvailableMinutes ?? DEFAULT_DAILY_MINUTES
+  const statuses = useMemo(
+    () => deadlineStatuses(atlas.activities, atlas.tasks, session?.userId ?? '', dailyMinutes, todayIso()),
+    [atlas.activities, atlas.tasks, session?.userId, dailyMinutes],
+  )
+
+  // Today always has its place: today's sessions once the route's tasks have loaded, otherwise a notice
+  // (no route yet, or it could not load).
   return (
     <>
       <AppHeader title="Your atlas" />
       <Main>
-        <div className="home-layout with-trail">
-          <div className="home-main">
-            <PlanSummaryStrip plan={plan} />
-            {route && progress.status === 'ready' ? (
+        <div className="home-layout">
+          {/* First in the page, so it sits above the atlas on narrow screens; on wide ones it moves to the side. */}
+          <aside className="home-side" aria-label="Today">
+            {ready ? (
               <TodayCard
                 route={route}
                 taskById={progress.taskById}
@@ -41,25 +48,21 @@ function Home({ plan }: { plan: Plan }) {
                 onToggle={progress.toggle}
               />
             ) : (
-              progress.status !== 'ready' && (
-                <RouteNotice status={progress.status} onRetry={progress.retry} variant="card" />
-              )
+              progress.status !== 'ready' && <RouteNotice status={progress.status} onRetry={progress.retry} />
             )}
             {progress.problem && <p role="alert">{progress.problem}</p>}
-            <Atlas />
+          </aside>
+          <div className="home-main">
+            {!atlas.loading && (
+              <ProgressCards
+                route={ready ? route : null}
+                isDone={progress.isDone}
+                activities={atlas.activities}
+                statuses={statuses}
+              />
+            )}
+            <Atlas atlas={atlas} statuses={statuses} />
           </div>
-          {route && progress.status === 'ready' ? (
-            <RouteTrail
-              route={route}
-              taskById={progress.taskById}
-              isDone={progress.isDone}
-              onToggle={progress.toggle}
-            />
-          ) : (
-            progress.status !== 'ready' && (
-              <RouteNotice status={progress.status} onRetry={progress.retry} variant="trail" />
-            )
-          )}
         </div>
       </Main>
     </>

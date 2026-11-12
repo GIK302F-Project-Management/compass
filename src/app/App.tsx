@@ -4,17 +4,14 @@ import { RegisterPage } from '@/features/auth/RegisterPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { HomePage } from '@/features/home/HomePage'
 import { ActivityPage } from '@/features/activities/ActivityPage'
-import { GoalsPage } from '@/features/goals/GoalsPage'
 import { PlannerPage } from '@/features/planner/PlannerPage'
-import { PlansPage } from '@/features/collaboration/PlansPage'
-import { PlanDetailPage } from '@/features/collaboration/PlanDetailPage'
 import { JoinPage } from '@/features/collaboration/JoinPage'
+import { ProfilePage } from '@/features/profile/ProfilePage'
 import { NotFoundPage } from './NotFoundPage'
 import { GuestOnly, RequireAuth } from '@/features/auth/RouteGuards'
 import { SkipLink } from '@/shared/layout/SkipLink'
-import { WithCurrentPlan } from '@/shared/plans/WithCurrentPlan'
 
-// The two planners became one page; old links and bookmarks keep working.
+// Pages that moved; old links and bookmarks keep working.
 function MovedTo({ path, search }: { path: string; search?: string }) {
   const location = useLocation()
   return <Navigate to={{ pathname: path, search: search ?? location.search }} replace />
@@ -31,17 +28,17 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
         </Route>
         <Route element={<RequireAuth />}>
-          <Route element={<WithCurrentPlan />}>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/activity/:id" element={<ActivityPage />} />
-            <Route path="/goals" element={<GoalsPage />} />
-            <Route path="/planner" element={<PlannerPage />} />
-            <Route path="/route" element={<MovedTo path="/planner" />} />
-            <Route path="/plan" element={<MovedTo path="/planner" search="?mode=hand" />} />
-            <Route path="/plans" element={<PlansPage />} />
-            <Route path="/plans/:id" element={<PlanDetailPage />} />
-            <Route path="/join/:token" element={<JoinPage />} />
-          </Route>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/activity/:id" element={<ActivityPage />} />
+          <Route path="/planner" element={<PlannerPage />} />
+          <Route path="/route" element={<MovedTo path="/planner" />} />
+          <Route path="/plan" element={<MovedTo path="/planner" search="?mode=hand" />} />
+          {/* Shared plans became shared activities, which live in the atlas. */}
+          <Route path="/plans/*" element={<MovedTo path="/home" search="" />} />
+          {/* The goals page was taken out; the atlas and its progress cards cover what it was for. */}
+          <Route path="/goals" element={<MovedTo path="/home" search="" />} />
+          <Route path="/join/:token" element={<JoinPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
