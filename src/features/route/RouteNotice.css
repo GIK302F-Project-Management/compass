@@ -1,0 +1,17 @@
+/* the route's place on the home page when there is no route to show (see RouteNotice) */
+.route-notice {
+  gap: 10px;
+  align-items: flex-start;
+}
+.route-notice-title {
+  margin: 0;
+  font: 600 22px/1.25 var(--serif);
+  color: var(--ink);
+}
+.route-notice-text {
+  margin: 0;
+  font-size: 15px;
+}
+.route-notice .button {
+  margin-top: 4px;
+}

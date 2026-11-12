@@ -1,5 +1,6 @@
 import { PlanSummaryStrip } from '@/features/collaboration/PlanSummaryStrip'
 import { Atlas } from '@/features/activities/Atlas'
+import { RouteNotice } from '@/features/route/RouteNotice'
 import { RouteTrail } from '@/features/route/RouteTrail'
 import { TodayCard } from '@/features/route/TodayCard'
 import { useRouteProgress } from '@/features/route/useRouteProgress'
@@ -22,33 +23,42 @@ function Home({ plan }: { plan: Plan }) {
   const session = useSession()
   const progress = useRouteProgress({ ownerEmail: session?.email ?? '', planId: plan.id })
   const route = progress.route
-  const showRoute = route !== null && progress.ready // the tasks it schedules have loaded
 
+  // The route always has its place: the route itself once its tasks have loaded, otherwise a notice
+  // (no route yet, loading, or could not load).
   return (
     <>
       <AppHeader title="Your atlas" />
       <Main>
-        <div className={route ? 'home-layout with-trail' : 'home-layout'}>
+        <div className="home-layout with-trail">
           <div className="home-main">
             <PlanSummaryStrip plan={plan} />
-            {route && showRoute && (
+            {route && progress.status === 'ready' ? (
               <TodayCard
                 route={route}
                 taskById={progress.taskById}
                 isDone={progress.isDone}
                 onToggle={progress.toggle}
               />
+            ) : (
+              progress.status !== 'ready' && (
+                <RouteNotice status={progress.status} onRetry={progress.retry} variant="card" />
+              )
             )}
             {progress.problem && <p role="alert">{progress.problem}</p>}
             <Atlas />
           </div>
-          {route && showRoute && (
+          {route && progress.status === 'ready' ? (
             <RouteTrail
               route={route}
               taskById={progress.taskById}
               isDone={progress.isDone}
               onToggle={progress.toggle}
             />
+          ) : (
+            progress.status !== 'ready' && (
+              <RouteNotice status={progress.status} onRetry={progress.retry} variant="trail" />
+            )
           )}
         </div>
       </Main>

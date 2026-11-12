@@ -6,7 +6,6 @@ import type { Task } from '@/features/activities/api/tasks'
 import { formatDueDate, todayIso } from '@/shared/utils/dates'
 import { formatMinutes } from '@/shared/utils/duration'
 import { routeDays, routeSummary, type RouteDay } from './routeDays'
-import { ContourHill } from '@/shared/ui/MapShapes'
 import { SessionItem } from './SessionItem'
 import './RouteTrail.css'
 
@@ -17,7 +16,7 @@ type RouteTrailProps = {
   onToggle: (index: number) => void
 }
 
-// Home page side panel: the saved route as a straight dotted trail down a faint map, one waypoint
+// Home page side panel: the saved route as a straight dotted trail, one waypoint
 // per day and a flag on the days a task is due. Today's stop is open with its sessions; any other
 // stop opens on click.
 export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProps) {
@@ -51,13 +50,6 @@ export function RouteTrail({ route, taskById, isDone, onToggle }: RouteTrailProp
 
   return (
     <aside className="route-trail" aria-labelledby="route-trail-heading">
-      <svg className="trail-terrain" viewBox="0 0 340 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <ContourHill x={250} y={130} width={190} height={150} rotate={-18} />
-        <ContourHill x={70} y={360} width={150} height={120} rotate={24} />
-        <ContourHill x={290} y={560} width={170} height={140} rotate={8} />
-        <ContourHill x={90} y={780} width={160} height={120} rotate={-12} />
-      </svg>
-
       <header className="trail-head">
         <div className="trail-head-row">
           <p className="kicker" id="route-trail-heading">
