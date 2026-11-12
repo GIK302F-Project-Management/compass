@@ -40,9 +40,11 @@ const stored = (key: string) => JSON.parse(localStorage.getItem(key) ?? '[]') as
 beforeEach(() => {
   vi.resetAllMocks()
   deleteActivity.mockResolvedValue(undefined)
-  createActivity.mockImplementation(async (planId, changes) => ({
+  createActivity.mockImplementation(async (changes) => ({
     id: `new-${changes.title}`,
-    planId,
+    ownerId: '1',
+    role: 'OWNER' as const,
+    memberCount: 1,
     ...changes,
     done: false,
     doneBy: null,
@@ -51,6 +53,7 @@ beforeEach(() => {
     id: `new-${input.title}`,
     activityId,
     ...input,
+    assigneeId: '1',
     done: false,
     doneBy: null,
   }))
@@ -75,12 +78,12 @@ describe('countLegacyActivities', () => {
 })
 
 describe('importLegacyActivities', () => {
-  it('moves the activities and their tasks into the plan', async () => {
+  it('moves the activities and their tasks into the atlas', async () => {
     store()
 
-    expect(await importLegacyActivities(ANA, '5')).toEqual({ imported: 2, failed: 0 })
+    expect(await importLegacyActivities(ANA)).toEqual({ imported: 2, failed: 0 })
 
-    expect(createActivity).toHaveBeenCalledWith('5', {
+    expect(createActivity).toHaveBeenCalledWith({
       title: 'Read chapter 4',
       subject: 'Physics',
       dueDate: '2026-12-01',
@@ -102,7 +105,7 @@ describe('importLegacyActivities', () => {
   it('keeps done tasks and activities done', async () => {
     store()
 
-    await importLegacyActivities(ANA, '5')
+    await importLegacyActivities(ANA)
 
     expect(updateTask).toHaveBeenCalledTimes(1)
     expect(updateTask).toHaveBeenCalledWith('new-Summary', { done: true })
@@ -116,7 +119,7 @@ describe('importLegacyActivities', () => {
     activities[1]!.done = true // "Essay" was marked done, but its task is open
     localStorage.setItem('compass.mockActivities', JSON.stringify(activities))
 
-    await importLegacyActivities(ANA, '5')
+    await importLegacyActivities(ANA)
 
     expect(setActivityDone).not.toHaveBeenCalledWith('new-Essay', true)
   })
@@ -124,7 +127,7 @@ describe('importLegacyActivities', () => {
   it('removes what it moved and leaves other accounts alone', async () => {
     store()
 
-    await importLegacyActivities(ANA, '5')
+    await importLegacyActivities(ANA)
 
     expect(stored('compass.mockActivities').map((item) => item.id)).toEqual(['b1'])
     expect(stored('compass.mockTasks').map((item) => item.id)).toEqual(['t3'])
@@ -135,7 +138,7 @@ describe('importLegacyActivities', () => {
     store()
     createTask.mockRejectedValueOnce(new Error('refused')) // the first task of the first activity
 
-    expect(await importLegacyActivities(ANA, '5')).toEqual({ imported: 1, failed: 1 })
+    expect(await importLegacyActivities(ANA)).toEqual({ imported: 1, failed: 1 })
 
     expect(deleteActivity).toHaveBeenCalledWith('new-Read chapter 4')
     expect(stored('compass.mockActivities').map((item) => item.id)).toEqual(['a1', 'b1'])

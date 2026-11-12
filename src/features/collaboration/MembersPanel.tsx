@@ -1,21 +1,25 @@
-import type { PlanMember } from '@/shared/api/plans'
+import type { Member } from './api/sharing'
+import { MemberAvatar } from './MemberAvatar'
+import { memberTones } from './tones'
 import './MembersPanel.css'
 
 type MembersPanelProps = {
-  members: PlanMember[]
-  isOwner: boolean // the student looking at the plan
-  onRemove: (member: PlanMember) => void
+  members: Member[]
+  isOwner: boolean // the student looking at the activity
+  onRemove: (member: Member) => void
   onLeave: () => void
 }
 
-// Who is in the plan. The owner can remove anyone; everyone else can only leave.
+// Who is in the activity. The owner can remove anyone; everyone else can only leave.
 export function MembersPanel({ members, isOwner, onRemove, onLeave }: MembersPanelProps) {
+  const tones = memberTones(members)
   return (
     <section className="members" aria-labelledby="members-heading">
       <h3 id="members-heading">Members ({members.length})</h3>
       <ul className="member-list">
         {members.map((member) => (
           <li key={member.userId}>
+            <MemberAvatar name={member.name} tone={tones.get(member.userId)!} />
             <span className="member-name">
               {member.name}
               {member.you && ' (you)'}
@@ -33,7 +37,7 @@ export function MembersPanel({ members, isOwner, onRemove, onLeave }: MembersPan
             )}
             {!isOwner && member.you && (
               <button type="button" className="button button-small button-danger" onClick={onLeave}>
-                Leave plan
+                Leave activity
               </button>
             )}
           </li>

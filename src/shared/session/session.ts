@@ -5,6 +5,7 @@
 export type Session = {
   token: string // sent to the backend as "Authorization: Bearer <token>"
   expiresAt: string // ISO timestamp; after this the backend refuses the token
+  userId: string // the student's id on the backend, e.g. to tell which tasks are theirs
   name: string
   email: string
 }
@@ -27,6 +28,7 @@ function parse(raw: string | null): Session | null {
     const valid =
       typeof value?.token === 'string' &&
       typeof value?.expiresAt === 'string' &&
+      typeof value?.userId === 'string' && // sessions saved before the id was kept ask for a new login
       typeof value?.name === 'string' &&
       typeof value?.email === 'string'
     return valid ? value : null

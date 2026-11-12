@@ -20,6 +20,7 @@ describe('loginUser', () => {
       session: {
         token: 'jwt-token',
         expiresAt: '2026-11-03T14:00:00Z',
+        userId: '1',
         name: 'Ana',
         email: 'ana@alumni.mondragon.edu',
       },

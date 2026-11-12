@@ -155,3 +155,98 @@
   grid-column: 2 / -1;
   justify-self: start;
 }
+
+/* Who does a task, on a shared activity */
+.task-assignee {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-top: 6px;
+}
+.task-assignee select {
+  max-width: 100%;
+  padding: 4px 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  background: var(--paper);
+  font: 500 12px var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.task-assignee.nobody select {
+  border-style: dashed;
+  color: var(--accent);
+}
+.task-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font: 500 12px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Members, who does what and the invitation links, under the tasks */
+.activity-sharing {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding-top: 2rem;
+  border-top: 1.5px solid var(--ink);
+}
+.activity-my-part {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.activity-hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* Shared sheet: each task wears the color of whoever does it (see collaboration/tones.ts) */
+.task-list .task.mine,
+.task-list .task.theirs,
+.task-list .task.nobody {
+  margin-left: -14px;
+  padding: 12px 12px 14px 14px;
+  margin-bottom: 18px;
+  border-left: 4px solid var(--tone, var(--line));
+}
+.task-list .task.mine {
+  background: var(--tone-bg);
+}
+.task-list .task.mine .task-title {
+  color: var(--ink);
+}
+.task-list .task.theirs .task-title {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.task-list .task.nobody {
+  border-left-style: dashed;
+  border-left-color: var(--line);
+}
+/* the dashed route line between tasks starts below the colored block */
+.task-list .task.mine::before,
+.task-list .task.theirs::before,
+.task-list .task.nobody::before {
+  left: 25px;
+  bottom: -18px;
+}
+.task-yours {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--tone);
+  color: var(--paper);
+  font: 600 11px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

@@ -19,6 +19,8 @@ describe('session store', () => {
     ['not JSON', 'not json'],
     ['a missing token', JSON.stringify({ expiresAt: 'x', name: 'Ana', email: 'a@b.c' })],
     ['a wrong type', JSON.stringify({ token: 1, expiresAt: 'x', name: 'Ana', email: 'a@b.c' })],
+    // saved before the user id was kept: the student logs in again once
+    ['no user id', JSON.stringify({ token: 't', expiresAt: '2999-01-01T00:00:00Z', name: 'Ana', email: 'a@b.c' })],
   ])('ignores stored data with %s', (_name, raw) => {
     localStorage.setItem('compass.session', raw)
     expect(getSession()).toBeNull()

@@ -1,15 +1,3 @@
-.search-form {
-  display: flex;
-  gap: 8px;
-  width: calc(100% - 32px);
-  max-width: 1040px;
-  margin: 2.5rem auto 0;
-}
-.search-input {
-  flex: 1;
-  min-width: 0;
-}
-
 /* Activities shown as an atlas: one map sheet per activity, in no fixed order */
 .atlas {
   display: grid;
@@ -30,8 +18,34 @@
 .atlas-count {
   margin-bottom: -12px;
 }
-.sheet.due-soon {
-  box-shadow: 6px 6px 0 var(--accent);
+/* The shadow of a sheet takes the color of its deadline when there is something to worry about */
+.sheet.level-tight {
+  box-shadow: 6px 6px 0 var(--tight);
+}
+.sheet.level-bad {
+  box-shadow: 6px 6px 0 var(--bad);
+}
+.sheet .status-badge {
+  margin: -3px 0;
+}
+.sheet-work {
+  margin: 0;
+  font: 500 12px var(--mono);
+  letter-spacing: 0.04em;
+}
+.sheet-work.level-good {
+  color: var(--good);
+}
+.sheet-work.level-tight {
+  color: var(--tight);
+}
+.sheet-work.level-bad {
+  color: var(--bad);
+}
+.sheet-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-soft);
 }
 .sheet.done {
   opacity: 0.65;
@@ -39,4 +53,25 @@
 .sheet-due {
   margin: 0;
   font-size: 15px;
+}
+/* A sheet shared with classmates says so under its due date. */
+.sheet-shared {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font: 500 11px var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.sheet-shared .icon {
+  width: 16px;
+  height: 16px;
+}
+/* "Have an invitation link?" in the header of a new sheet */
+.sheet-header-link {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
 }

@@ -66,6 +66,15 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
         autoFocus
       />
       <FormField
+        id={`${idPrefix}-estimate`}
+        label="Time needed (hours)"
+        hint="How long it should take, e.g. 1.5. Your route and your progress are counted with it."
+        value={values.estimate}
+        onChange={handleChange('estimate')}
+        inputMode="decimal"
+        error={errors.estimate}
+      />
+      <FormField
         id={`${idPrefix}-details`}
         label="Details"
         hint="Optional."
@@ -79,15 +88,6 @@ export function TaskForm({ activityId, task, onSaved, onCancel }: TaskFormProps)
         type="date"
         value={values.dueDate}
         onChange={handleChange('dueDate')}
-      />
-      <FormField
-        id={`${idPrefix}-estimate`}
-        label="Estimate (hours)"
-        hint="Optional. How long it should take, e.g. 1.5. The route planner uses it."
-        value={values.estimate}
-        onChange={handleChange('estimate')}
-        inputMode="decimal"
-        error={errors.estimate}
       />
       {errors.form && (
         <p className="form-error" role="alert">

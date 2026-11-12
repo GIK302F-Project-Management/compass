@@ -5,6 +5,7 @@ import { formatDueDate, todayIso } from '@/shared/utils/dates'
 import { formatMinutes } from '@/shared/utils/duration'
 import { routeSummary } from './routeDays'
 import { SessionItem } from './SessionItem'
+import { ProgressBar } from '@/shared/ui/ProgressBar'
 import './TodayCard.css'
 
 type TodayCardProps = {
@@ -14,11 +15,11 @@ type TodayCardProps = {
   onToggle: (index: number) => void
 }
 
-// Home page card for small screens (wide screens get the RouteTrail instead):
-// what the saved route asks for today, or the next study day, ticked off in place.
+// Home page card: what the saved route asks for today, or the next study day, ticked off in place.
+// The whole route is one click away, in the planner.
 export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps) {
   const today = todayIso()
-  const { doneCount, total, behind, finished } = routeSummary(route, isDone, today)
+  const { behind, finished } = routeSummary(route, isDone, today)
   const indexes = route.sessions.map((_, index) => index)
 
   const hasToday = route.sessions.some((item) => item.date === today)
@@ -29,6 +30,8 @@ export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps)
   const shownDate = hasToday ? today : nextDate
   const shown = shownDate ? indexes.filter((index) => sessionAt(route, index).date === shownDate) : []
   const shownMinutes = shown.reduce((sum, index) => sum + sessionAt(route, index).durationMinutes, 0)
+  // The count and the bar are for the day on the note, not the whole route (that is in the planner).
+  const shownDone = shown.filter(isDone).length
 
   let heading: string
   if (finished) heading = 'Route complete'
@@ -42,20 +45,19 @@ export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps)
         <p className="kicker" id="today-card-heading">
           {heading}
         </p>
-        <span className="today-card-count">
-          {doneCount} of {total} done
-        </span>
+        {shown.length > 0 && !finished && (
+          <span className="today-card-count">
+            {shownDone} of {shown.length} done
+          </span>
+        )}
       </header>
-      <div
-        className="progress-track"
-        role="progressbar"
-        aria-label="Sessions done"
-        aria-valuemin={0}
-        aria-valuemax={total}
-        aria-valuenow={doneCount}
-      >
-        <span style={{ width: `${total ? (doneCount / total) * 100 : 0}%` }} />
-      </div>
+      {shown.length > 0 && !finished && (
+        <ProgressBar
+          value={shownDone}
+          max={shown.length}
+          label={shownDate === today ? 'Sessions done today' : 'Sessions done that day'}
+        />
+      )}
 
       {finished ? (
         <p className="today-card-note">Every session on this route is behind you. Nice work.</p>
@@ -96,7 +98,7 @@ export function TodayCard({ route, taskById, isDone, onToggle }: TodayCardProps)
           </Link>
         )}
         <Link to="/planner" className="button button-small">
-          Open route →
+          See full route →
         </Link>
       </div>
     </section>

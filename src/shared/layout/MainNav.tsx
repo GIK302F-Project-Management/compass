@@ -10,8 +10,6 @@ type NavItem = {
 
 const ITEMS: NavItem[] = [
   { to: '/home', label: 'Atlas', alsoUnder: '/activity' },
-  { to: '/plans', label: 'Shared plans', alsoUnder: '/plans' },
-  { to: '/goals', label: 'Goals' },
   { to: '/planner', label: 'Planner' },
 ]
 

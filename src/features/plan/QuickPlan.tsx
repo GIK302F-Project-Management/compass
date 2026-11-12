@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { listActivities } from '@/features/activities/api/activities'
 import { clearLastPlan, loadLastPlan, saveLastPlan, type SavedPlan } from './api/lastPlan'
 import { generateStudyPlan, type PlanFailure } from '@/shared/api/studyPlans'
-import { useActivePlan } from '@/shared/plans/useCurrentPlan'
 import { useSession } from '@/shared/session/useSession'
 import { PlanForm } from './PlanForm'
 import { PlanResult } from './PlanResult'
@@ -41,7 +40,6 @@ function initialValues(saved: SavedPlan | null): PlanValues {
 export function QuickPlan() {
   const session = useSession()
   const ownerEmail = session?.email ?? ''
-  const activePlan = useActivePlan()
   const [saved, setSaved] = useState(() => loadLastPlan(ownerEmail))
   const [values, setValues] = useState(() => initialValues(saved))
   const [errors, setErrors] = useState<PlanErrors>(NO_ERRORS)
@@ -58,7 +56,7 @@ export function QuickPlan() {
   useEffect(() => {
     if (saved) return
     let cancelled = false
-    listActivities(activePlan.id)
+    listActivities()
       .catch(() => [])
       .then((activities) => {
         if (cancelled) return
@@ -81,7 +79,7 @@ export function QuickPlan() {
     return () => {
       cancelled = true
     }
-  }, [activePlan.id, saved])
+  }, [saved])
 
   // After a failed submit, move the keyboard to the first field that needs attention.
   useEffect(() => {

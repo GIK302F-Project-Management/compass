@@ -17,7 +17,7 @@ const importLegacyActivities = vi.mocked(legacy.importLegacyActivities)
 const discardLegacyActivities = vi.mocked(legacy.discardLegacyActivities)
 
 function renderBanner(onImported = vi.fn()) {
-  render(<LegacyImportBanner planId="3" planName="My plan" onImported={onImported} />)
+  render(<LegacyImportBanner onImported={onImported} />)
   return onImported
 }
 
@@ -35,15 +35,15 @@ describe('LegacyImportBanner', () => {
     expect(screen.queryByRole('region')).not.toBeInTheDocument()
   })
 
-  it('moves the activities into the plan and tells the list to reload', async () => {
+  it('moves the activities into the atlas and tells the list to reload', async () => {
     countLegacyActivities.mockReturnValueOnce(2).mockReturnValue(0)
     importLegacyActivities.mockResolvedValue({ imported: 2, failed: 0 })
     const onImported = renderBanner()
 
     await userEvent.click(screen.getByRole('button', { name: 'Move them here' }))
 
-    expect(importLegacyActivities).toHaveBeenCalledWith('ana@alumni.mondragon.edu', '3')
-    expect(await screen.findByText('Moved 2 activities into "My plan".')).toBeInTheDocument()
+    expect(importLegacyActivities).toHaveBeenCalledWith('ana@alumni.mondragon.edu')
+    expect(await screen.findByText('Moved 2 activities into your atlas.')).toBeInTheDocument()
     expect(onImported).toHaveBeenCalled()
     expect(screen.queryByRole('button', { name: 'Move them here' })).not.toBeInTheDocument()
   })

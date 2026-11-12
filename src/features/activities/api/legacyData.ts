@@ -2,7 +2,7 @@ import { createActivity, deleteActivity, setActivityDone } from './activities'
 import { createTask, updateTask } from './tasks'
 
 // Before activities lived in the backend, they were kept in this browser (localStorage), one list for every
-// account that logged in here. This file finds that old data and moves it into a plan on the backend.
+// account that logged in here. This file finds that old data and moves it into the atlas on the backend.
 // The keys keep the names the old stores used.
 const ACTIVITIES_KEY = 'compass.mockActivities'
 const TASKS_KEY = 'compass.mockTasks'
@@ -72,16 +72,16 @@ function forgetOldRoute(email: string) {
   localStorage.removeItem(oldRouteKey(email))
 }
 
-/** How many activities this account still has in the browser from before plans existed. */
+/** How many activities this account still has in the browser from before they were kept on the server. */
 export function countLegacyActivities(ownerEmail: string): number {
   return readActivities().filter((activity) => activity.ownerEmail === ownerEmail).length
 }
 
 /**
- * Copies the account's old activities and tasks into the plan, one activity at a time. An activity that was
+ * Copies the account's old activities and tasks into the atlas, one activity at a time. An activity that was
  * moved is removed from the browser; one that could not be moved (the backend refused it) stays, and is counted.
  */
-export async function importLegacyActivities(ownerEmail: string, planId: string): Promise<ImportResult> {
+export async function importLegacyActivities(ownerEmail: string): Promise<ImportResult> {
   const mine = readActivities().filter((activity) => activity.ownerEmail === ownerEmail)
   let imported = 0
   let failed = 0
@@ -90,7 +90,7 @@ export async function importLegacyActivities(ownerEmail: string, planId: string)
     const tasks = readTasks().filter((task) => task.activityId === legacy.id)
     let createdId: string | null = null
     try {
-      const created = await createActivity(planId, {
+      const created = await createActivity({
         title: legacy.title,
         subject: legacy.subject,
         dueDate: legacy.dueDate,

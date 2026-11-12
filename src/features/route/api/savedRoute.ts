@@ -16,17 +16,16 @@ export type SavedRoute = StudyPlanResponse & {
   createdAt: string
 }
 
-// Whose route it is: a route is personal (the backend does not store it) and made for one plan,
-// because its goals are that plan's tasks.
+// Whose route it is: a route is personal (the backend does not store it), and each student has one,
+// made of the tasks assigned to them across their whole atlas.
 export type RouteScope = {
   ownerEmail: string
-  planId: string
 }
 
-// The last route is remembered per student and plan in localStorage.
-// v3: goals are the tasks of a shared plan (v2 routes used tasks kept in the browser and are ignored).
-function storageKey({ ownerEmail, planId }: RouteScope) {
-  return `compass.route.v3.${ownerEmail}.${planId}`
+// The last route is remembered per student in localStorage.
+// v4: one route per student (v3 routes were one per shared plan and are ignored).
+function storageKey({ ownerEmail }: RouteScope) {
+  return `compass.route.v4.${ownerEmail}`
 }
 
 export function loadRoute(scope: RouteScope): SavedRoute | null {

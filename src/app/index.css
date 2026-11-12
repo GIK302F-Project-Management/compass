@@ -12,6 +12,14 @@
   --moss: #5d7a4e;
   --error: #b3261e;
 
+  /* How a metric is doing: good (green), tight (amber), bad (red) */
+  --good: #3f7a3a;
+  --good-bg: rgba(63, 122, 58, 0.12);
+  --tight: #a86a08;
+  --tight-bg: rgba(196, 128, 16, 0.14);
+  --bad: #c0352b;
+  --bad-bg: rgba(192, 53, 43, 0.1);
+
   /* Names used by the existing pages */
   --text: var(--ink-soft);
   --text-h: var(--ink);
@@ -47,6 +55,12 @@
     --accent-bg: rgba(239, 106, 76, 0.12);
     --moss: #8fb07c;
     --error: #ff8a7a;
+    --good: #8fca7e;
+    --good-bg: rgba(143, 202, 126, 0.14);
+    --tight: #e8b04a;
+    --tight-bg: rgba(232, 176, 74, 0.14);
+    --bad: #ff7b6b;
+    --bad-bg: rgba(255, 123, 107, 0.13);
   }
 }
 

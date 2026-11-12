@@ -1,0 +1,61 @@
+/* The colors of the members of a shared activity (see tones.ts). Map colors: marker, moss, lake, ochre, heather, pine. */
+.you {
+  --tone: var(--accent);
+  --tone-bg: var(--accent-bg);
+}
+.tone-1 {
+  --tone: #4f7a3f;
+  --tone-bg: rgba(79, 122, 63, 0.12);
+}
+.tone-2 {
+  --tone: #2f6690;
+  --tone-bg: rgba(47, 102, 144, 0.12);
+}
+.tone-3 {
+  --tone: #a8741a;
+  --tone-bg: rgba(168, 116, 26, 0.13);
+}
+.tone-4 {
+  --tone: #7d4a7a;
+  --tone-bg: rgba(125, 74, 122, 0.12);
+}
+.tone-5 {
+  --tone: #2d7a70;
+  --tone-bg: rgba(45, 122, 112, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  .tone-1 {
+    --tone: #9cc98a;
+    --tone-bg: rgba(156, 201, 138, 0.14);
+  }
+  .tone-2 {
+    --tone: #8cbbe0;
+    --tone-bg: rgba(140, 187, 224, 0.14);
+  }
+  .tone-3 {
+    --tone: #e3b35e;
+    --tone-bg: rgba(227, 179, 94, 0.14);
+  }
+  .tone-4 {
+    --tone: #d3a0d0;
+    --tone-bg: rgba(211, 160, 208, 0.14);
+  }
+  .tone-5 {
+    --tone: #7fcfc4;
+    --tone-bg: rgba(127, 207, 196, 0.14);
+  }
+}
+
+.member-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--tone);
+  color: var(--paper);
+  font: 600 11px var(--mono);
+  letter-spacing: 0.04em;
+}

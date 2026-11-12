@@ -1,13 +1,17 @@
 import { ApiError, apiJson } from '@/shared/api/http'
-import { asList, asObject, readBoolean, readId, readOptionalId, readString } from '@/shared/api/decode'
+import { asList, asObject, readBoolean, readId, readNumber, readOptionalId, readString } from '@/shared/api/decode'
 
-// The activities of a plan, on compass-backend. Every member of the plan can add, edit, complete and delete them,
-// so what one student changes is what the others see the next time they load the plan.
-// All of these need a login (apiJson sends the token). A plan or activity the student cannot see answers 404.
+// The activities of the student's atlas, on compass-backend: their own and the ones classmates shared with them.
+// Every member of an activity can edit and complete it; only its owner deletes it and invites others.
+// All of these need a login (apiJson sends the token). An activity the student is not in answers 404.
+
+export type ActivityRole = 'OWNER' | 'MEMBER'
 
 export type Activity = {
   id: string
-  planId: string
+  ownerId: string
+  role: ActivityRole // the logged-in student's role in it
+  memberCount: number // above 1 means the activity is shared
   title: string
   subject: string // the student's subject or area, e.g. "Physics"
   dueDate: string // YYYY-MM-DD
@@ -21,12 +25,14 @@ export type ActivityChanges = {
   dueDate: string // YYYY-MM-DD
 }
 
-// GET /plans/<planId>/activities: the plan's activities in the order they were created (new ones go at the end).
-export async function listActivities(planId: string): Promise<Activity[]> {
-  return asList(await apiJson(`/plans/${planId}/activities`), 'activities', toActivity)
+export const isShared = (activity: Activity) => activity.memberCount > 1
+
+// GET /activities: the whole atlas in the order the activities were created (new ones go at the end).
+export async function listActivities(): Promise<Activity[]> {
+  return asList(await apiJson('/activities'), 'activities', toActivity)
 }
 
-// GET /activities/<id>: the activity, or null when it does not exist (or is in a plan the student is not in).
+// GET /activities/<id>: the activity, or null when it does not exist (or the student is not in it).
 export async function getActivity(id: string): Promise<Activity | null> {
   try {
     return toActivity(await apiJson(`/activities/${id}`))
@@ -36,12 +42,12 @@ export async function getActivity(id: string): Promise<Activity | null> {
   }
 }
 
-// POST /plans/<planId>/activities: 201 -> the created activity, 400 -> ApiError with fieldErrors.
-export async function createActivity(planId: string, changes: ActivityChanges): Promise<Activity> {
-  return toActivity(await apiJson(`/plans/${planId}/activities`, { method: 'POST', body: trimmed(changes) }))
+// POST /activities: 201 -> the created activity, owned by the student. 400 -> ApiError with fieldErrors.
+export async function createActivity(changes: ActivityChanges): Promise<Activity> {
+  return toActivity(await apiJson('/activities', { method: 'POST', body: trimmed(changes) }))
 }
 
-// PUT /activities/<id>: 200 -> the updated activity.
+// PUT /activities/<id>: 200 -> the updated activity. Any member can do it.
 export async function updateActivity(id: string, changes: ActivityChanges): Promise<Activity> {
   return toActivity(await apiJson(`/activities/${id}`, { method: 'PUT', body: trimmed(changes) }))
 }
@@ -51,7 +57,7 @@ export async function setActivityDone(id: string, done: boolean): Promise<Activi
   return toActivity(await apiJson(`/activities/${id}/done`, { method: 'PUT', body: { done } }))
 }
 
-// DELETE /activities/<id>: 204. The backend also removes the activity's tasks.
+// DELETE /activities/<id>: 204, owner only (403 for the other members). Removes it, with its tasks, for everyone.
 export async function deleteActivity(id: string): Promise<void> {
   await apiJson(`/activities/${id}`, { method: 'DELETE' })
 }
@@ -62,9 +68,13 @@ function trimmed(changes: ActivityChanges): ActivityChanges {
 
 function toActivity(value: unknown): Activity {
   const body = asObject(value, 'activity')
+  const role = readString(body, 'role')
+  if (role !== 'OWNER' && role !== 'MEMBER') throw new Error('Unexpected response: unknown role')
   return {
     id: readId(body, 'id'),
-    planId: readId(body, 'planId'),
+    ownerId: readId(body, 'ownerId'),
+    role,
+    memberCount: readNumber(body, 'memberCount'),
     title: readString(body, 'title'),
     subject: readString(body, 'subject'),
     dueDate: readString(body, 'dueDate'),

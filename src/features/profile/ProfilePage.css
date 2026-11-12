@@ -1,0 +1,39 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: calc(100% - 32px);
+  max-width: 640px;
+  margin: 2.5rem auto 4rem;
+}
+.profile-page .page-intro p,
+.profile-page .page-intro h2 {
+  margin: 0;
+}
+.profile-sheet {
+  min-height: 0;
+}
+.profile-sheet .sheet-body {
+  gap: 18px;
+  padding-bottom: 20px;
+}
+.profile-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px 24px;
+  margin: 0;
+}
+.profile-facts dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.profile-actions p {
+  margin: 0;
+  color: var(--good);
+}
